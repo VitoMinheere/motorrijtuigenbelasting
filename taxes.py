@@ -31,7 +31,9 @@ def calc_multiplier(weight: int, cut_off: int = 900, step: int = 100) -> int:
     Returns:
         int: Amount of times the extra tax will be added
     """
-    return (weight - cut_off) // step
+    if weight > cut_off:
+        return round((weight - cut_off) // step)
+    return 0
 
 def vehicle_tax(weight: int) -> float:
     """Calculate base tax for weight class

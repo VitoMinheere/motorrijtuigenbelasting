@@ -159,7 +159,7 @@ def tax_reduction_co2(tax: float, co2_level: int) -> float:
     return tax
 
 
-def calculate_tax(energy_source: EnergySource, weight: int, province: str, year: int) -> float:
+def calculate_tax(energy_source: EnergySource, weight: int, province: str, year: int) -> int:
     """Run through all tax calculations for a vehicle
 
     Args:
@@ -169,17 +169,19 @@ def calculate_tax(energy_source: EnergySource, weight: int, province: str, year:
         year (int): Year of calculation
 
     Returns:
-        float: Total tax amount, rounded to 2 decimals
+        int: Total tax amount, with decimals dropped
     """
     rounded_weight = 100 * round(weight/100)
 
     if energy_source == EnergySource.ELEKTRICITEIT:
-        if year == 2025:
-            return round(vehicle_tax(rounded_weight) * 0.25)
-        elif year >= 2026:
-            return round(vehicle_tax(rounded_weight))
-        else:
+        if year < 2025:
             return 0.0
+        elif year == 2025:
+            return round(vehicle_tax(rounded_weight) * 0.25)
+        elif year >= 2026 and year <= 2029:
+            return round(vehicle_tax(rounded_weight) * 0.75)
+        else:
+            return vehicle_tax(rounded_weight)
 
     base_tax = vehicle_tax(rounded_weight)
     if year in INFLATION:
@@ -191,4 +193,5 @@ def calculate_tax(energy_source: EnergySource, weight: int, province: str, year:
     opcenten = calc_opcenten(rounded_weight, province, year)
     print(f"opcenten :      {opcenten}")
 
-    return round(base_tax + fuel_tax + opcenten)
+    
+    return int(base_tax + fuel_tax + opcenten)

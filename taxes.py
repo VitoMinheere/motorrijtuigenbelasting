@@ -4,6 +4,15 @@ from vehicle_types import EnergySource
 from opcenten import OPCENTEN
 
 INFLATION = {
+    2015: 0.009,
+    2016: 0.005,
+    2017: 0.003,
+    2018: 0.008,
+    2019: 0.012,
+    2020: 0.016,
+    2021: 0.016,
+    2022: 0.013,
+    2023: 0.063,
     2024: 0.099
 }
 
@@ -80,7 +89,7 @@ def calc_opcenten(weight: int, province: str, year: int) -> float:
     elif weight > 900 and weight < 3300:
         base = 45.81 + (11.68 * (calc_multiplier(weight) - 1))
     
-    print(f"opcenten base: {base}")
+    # print(f"opcenten base: {base}")
     return base * (OPCENTEN[province][year] / 100)
 
 def calc_fuel_tax(energy_source: EnergySource, weight: int) -> float:
@@ -187,11 +196,11 @@ def calculate_tax(energy_source: EnergySource, weight: int, province: str, year:
     if year in INFLATION:
         base_tax = round(base_tax * (1 + INFLATION[year]))
 
-    print(f"mrb :           {base_tax}")
+    # print(f"mrb :           {base_tax}")
     fuel_tax = calc_fuel_tax(energy_source, rounded_weight)
-    print(f"toeslag :       {fuel_tax}")
+    # print(f"toeslag :       {fuel_tax}")
     opcenten = calc_opcenten(rounded_weight, province, year)
-    print(f"opcenten :      {opcenten}")
+    # print(f"opcenten :      {opcenten}")
 
     
     return int(base_tax + fuel_tax + opcenten)

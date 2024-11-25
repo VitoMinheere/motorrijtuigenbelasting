@@ -9,17 +9,17 @@ FUEL_TYPE = EnergySource.BENZINE
 CAR_WEIGHTS = range(500, 3300, 100)
 PROVINCES = [
     "drenthe",
-    "flevoland",
-    "friesland", 
-    "gelderland", 
-    "groningen", 
-    "limburg",
-    "noord-brabant", 
-    "noord-holland", 
-    "overijssel",
-    "utrecht", 
-    "zeeland", 
-    "zuid-holland"
+    # "flevoland",
+    # "friesland", 
+    # "gelderland", 
+    # "groningen", 
+    # "limburg",
+    # "noord-brabant", 
+    # "noord-holland", 
+    # "overijssel",
+    # "utrecht", 
+    # "zeeland", 
+    # "zuid-holland"
     ]
 
 class AutoVivification(dict):
@@ -32,14 +32,6 @@ class AutoVivification(dict):
             return value
 
 results = AutoVivification()
-    # {
-    # "drenthe": {
-    #     500: {
-    #         2023: 0
-    #         }
-    #     }
-    # }
-    # )
 
 for province in PROVINCES:
     for weight_class in CAR_WEIGHTS:
@@ -52,5 +44,5 @@ for province in PROVINCES:
             )
             results[province][str(weight_class)][str(year)] = tax
 
-with open('output/benzine.json', 'w') as convert_file: 
+with open('output/drenthe_benzine.json', 'w') as convert_file: 
      convert_file.write(json.dumps(results))

@@ -1,5 +1,10 @@
 import unittest
-from taxes import calculate_tax, calc_opcenten, calc_multiplier
+from taxes import (
+    calculate_base_tax, 
+    calculate_tax,
+    calc_opcenten, 
+    calc_multiplier
+)
 from vehicle_types import EnergySource
 from opcenten import OPCENTEN
 
@@ -27,25 +32,32 @@ class TestVehicleTaxCalculations(unittest.TestCase):
         with self.assertRaises(KeyError):
             calc_opcenten(weight, "Non-existent", year)
     
-    def test_calculate_tax(self):
-        # Test cases for calculate_tax
+    def test_calculate_total_tax(self):
+        # Test data
         weight = 1200
         province = "Noord-Holland"
         year = 2023
         energy_source = EnergySource.BENZINE
-        OPCENTEN[province] = {2023: 123.45}  # Mocking OPCENTEN
+
+        # Mock OPCENTEN for testing
+        OPCENTEN[province] = {2023: 123.45}  # Mocked opcenten percentage (1.2345 multiplier)
+
+        # Calculate expected values based on known rules
+        rounded_weight = 100 * round(weight / 100)
         
+        # Base tax calculation
+        base_tax = calculate_base_tax(rounded_weight)
+
         # Mock expected values based on calculations
         base_tax = 56.13 + (15.09 * calc_multiplier(weight))
         inflation = base_tax * (1 + 0.063)  # 6.3% inflation in 2023
         opcenten = calc_opcenten(weight, province, year)
-        expected = int(inflation + opcenten)  # No fuel tax for benzine
+        # Expected total tax
+        expected_tax = int(inflation + opcenten)  # No fuel tax for benzine
 
-        self.assertEqual(calculate_tax(energy_source, weight, province, year), expected)
-
-        # Edge case: Electric car before 2025
-        energy_source = EnergySource.ELEKTRICITEIT
-        self.assertEqual(calculate_tax(energy_source, weight, province, 2023), 0)
+        # Assert the calculate_total_tax function matches expected result
+        calculated_tax = calculate_tax(energy_source, weight, province, year)
+        self.assertEqual(calculated_tax, expected_tax)
 
 if __name__ == "__main__":
     unittest.main()

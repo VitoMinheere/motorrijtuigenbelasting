@@ -2,32 +2,7 @@ from enum import Enum
 
 from vehicle_types import EnergySource
 from opcenten import OPCENTEN
-
-INFLATION = {
-    2015: 0.009,
-    2016: 0.005,
-    2017: 0.003,
-    2018: 0.008,
-    2019: 0.012,
-    2020: 0.016,
-    2021: 0.016,
-    2022: 0.013,
-    2023: 0.063,
-    2024: 0.099
-}
-
-# Tax consists of 
-# MOTORRIJTUIG + BRANDSTOF for Benzine
-# MOTORRIJTUIG + BRANDSTOF_LPG for LPG
-# MOTORRIJTUIG + BRANDSTOF + FIJNSTOF for Diesel
-class TaxTypes(Enum):
-    MOTORRIJTUIG = 'Motorrijtuigenbelasting'
-    BRANDSTOF_BENZINE = 'Brandstoftoeslag'
-    BRANDSTOF_LPG = 'Brandstoftoeslag'
-    BRANDSTOF_DIESEL = 'Brandstoftoeslag'
-    FIJNSTOF = 'Fijnstoftoeslag'
-
-
+from constants import WEIGHT_TAX_BRACKETS, EXCESS_RATES, INFLATION
 
 def calc_multiplier(weight: int, cut_off: int = 900, step: int = 100) -> int:
     """Calculate the added tax based on weight of vehicle
@@ -92,115 +67,112 @@ def calc_opcenten(weight: int, province: str, year: int) -> float:
     # print(f"opcenten base: {base}")
     return base * (OPCENTEN[province][year] / 100)
 
+
 def calc_fuel_tax(energy_source: EnergySource, weight: int) -> float:
-    """Calculate extra fuel tax
-    Only for Diesel, LPG and other fuel types not Benzine.
-    Will also count for electric cars from 2026
-
-    Args:
-        energy_source (EnergySource): Energy source that primarily powers the vehicle
-        weight (int): Rounded weight of vehicle
-
-    Returns:
-        float: Amount of tax added
-    """
-
+    """Calculate extra fuel tax based on energy source."""
     if energy_source == EnergySource.DIESEL:
-        tax = 0.0
-        if weight <= 500: 
-            tax = 73.75
-        if weight <= 600:
-            tax = 87.02
-        if weight <= 700: 
-            tax = 100.51
-        if weight <= 800: 
-            tax = 114.25
-        # From here excess weight is calculated per 100kg
-        if weight >= 900:
-            tax = 133.69 + (14.48 * (calc_multiplier(weight) - 1))
-
-        return fijnstof_tax(tax)
-
-
-    elif energy_source == EnergySource.LPG_G3:
-        if weight <= 800: return 0.0
-        # From here excess weight is calculated per 100kg
-        else:
-            return 16.64 + abs((16.64 * calc_multiplier(weight)))
-    
+        return calculate_base_tax(weight, energy_source="diesel")
+    elif energy_source == EnergySource.LPG_G3 and weight > 800:
+        return 16.64 + abs(16.64 * calc_multiplier(weight))
     elif energy_source == EnergySource.OVERIGE:
-        if weight <= 500: return 86.25
-        if weight <= 600: return 103.39
-        if weight <= 700: return 120.54
-        if weight <= 800: return 137.65
-        # From here excess weight is calculated per 100kg
-        if weight >= 900:
-            return 150.36 + (15.92 * calc_multiplier(weight))
+        return calculate_base_tax(weight, energy_source="overige")
+    return 0.0
 
-    else:
-        return 0.0
-
-def fijnstof_tax(tax: float) -> float:
-    """Extra tax added for small particule matters in diesel
+def calculate_base_tax(weight: int, energy_source: str = "benzine", cutoff: int = 900) -> float:
+    """
+    Generalized base tax calculator based on weight and energy source.
 
     Args:
-        tax (float): Tax rate before this surcharge
+        weight (int): Rounded weight of the vehicle.
+        energy_source (str): The energy source category (default, diesel, overige).
+        cutoff (int): Weight threshold for applying excess rates.
 
     Returns:
-        float: Tax amount after surcharge, rounded to 2 decimals
+        float: The base tax for the given weight and energy source.
     """
-    return round(tax * 1.19, 2)
+    tax_brackets = WEIGHT_TAX_BRACKETS[energy_source]
+    excess_rate = EXCESS_RATES[energy_source]
 
+    for max_weight, rate in tax_brackets:
+        if weight <= max_weight:
+            return rate
 
-def tax_reduction_co2(tax: float, co2_level: int) -> float:
-    """Calculate reduction in taxes if co2 levels are low enough
-    Only for Diesel engines
-    source: https://wetten.overheid.nl/BWBR0006324/2023-01-01/#HoofdstukIV_Afdeling2_Artikel23b
+    # Apply excess rate for weights above the cutoff
+    if weight >= cutoff:
+        multiplier = max(0, (weight - cutoff) // 100)
+        base_rate = tax_brackets[-1][1]  # Use the last bracket's rate as the base
+        return base_rate + (multiplier * excess_rate)
 
-    Returns:
-        float: Amount of tax
-    """
-    if co2_level == 0:
-        tax = 0.0
-    elif co2_level <= 50:
-        tax = round(tax / 2, 2)
+    return 0.0
 
-    return tax
-
-
-def calculate_tax(energy_source: EnergySource, weight: int, province: str, year: int) -> int:
-    """Run through all tax calculations for a vehicle
+def calc_opcenten(weight: int, province: str, year: int) -> float:
+    """Calculate the provincional added taxes
 
     Args:
-        energy_source (EnergySource): Energy source that primarily powers the vehicle
         weight (int): Rounded weight of vehicle
         province (str): Name of the province
         year (int): Year of calculation
 
     Returns:
-        int: Total tax amount, with decimals dropped
+        float: Amount of tax added
     """
-    rounded_weight = 100 * round(weight/100)
 
+    base = 0
+    if weight <= 500: 
+        base = 14.5
+    elif weight <= 600: 
+        base = 17.33
+    elif weight <= 700: 
+        base = 20.40
+    elif weight <= 800: 
+        base =  26.98
+    elif weight <= 900:
+        base = 34.12
+    # From here excess weight is calculated per 100kg
+    elif weight > 900 and weight < 3300:
+        base = 45.81 + (11.68 * (calc_multiplier(weight) - 1))
+    
+    # print(f"opcenten base: {base}")
+    return base * (OPCENTEN[province][year] / 100)
+
+def calculate_tax(
+    energy_source: EnergySource, weight: int, province: str, year: int
+) -> float:
+    """
+    Calculate the total tax for a vehicle based on various components.
+
+    Args:
+        energy_source (EnergySource): The energy source type of the vehicle.
+        weight (int): Weight of the vehicle in kg.
+        province (str): Province where the vehicle is registered.
+        year (int): Year for which tax is calculated.
+
+    Returns:
+        float: Total tax amount.
+    """
+    rounded_weight = 100 * round(weight / 100)
+
+    base_tax = calculate_base_tax(rounded_weight)
+
+     # Step 3: Handle energy-specific adjustments
     if energy_source == EnergySource.ELEKTRICITEIT:
         if year < 2025:
-            return 0.0
+            return 0  # No tax for electric cars before 2025
         elif year == 2025:
-            return round(vehicle_tax(rounded_weight) * 0.25)
-        elif year >= 2026 and year <= 2029:
-            return round(vehicle_tax(rounded_weight) * 0.75)
+            base_tax *= 0.25  # 25% of base tax
+        elif 2026 <= year <= 2029:
+            base_tax *= 0.75  # 75% of base tax
         else:
-            return vehicle_tax(rounded_weight)
+            base_tax *= 1.0  # 100% of base tax
 
-    base_tax = vehicle_tax(rounded_weight)
+    # Apply inflation adjustment if applicable
     if year in INFLATION:
-        base_tax = round(base_tax * (1 + INFLATION[year]))
+        base_tax *= (1 + INFLATION[year])
 
-    # print(f"mrb :           {base_tax}")
+    # Fuel-specific tax
     fuel_tax = calc_fuel_tax(energy_source, rounded_weight)
-    # print(f"toeslag :       {fuel_tax}")
-    opcenten = calc_opcenten(rounded_weight, province, year)
-    # print(f"opcenten :      {opcenten}")
 
-    
+    # Provincial opcenten tax
+    opcenten = calc_opcenten(weight, province, year)
+
     return int(base_tax + fuel_tax + opcenten)

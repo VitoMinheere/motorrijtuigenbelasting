@@ -3,6 +3,7 @@ from enum import Enum
 class EnergySource(Enum):
     BENZINE = 'Benzine'
     DIESEL = 'Diesel'
+    LPG = 'LPG'
     LPG_G3 = 'LPG G3'
     ELEKTRICITEIT = 'Elektrisch'
     OVERIGE = 'Overige'

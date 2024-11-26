@@ -3,14 +3,7 @@ from taxes import calculate_tax, calc_opcenten, calc_multiplier
 from vehicle_types import EnergySource
 from constants import OPCENTEN
 
-"""Tests validated for 2024 with the Motorrijtuigenbelasting tool from the Belastingdienst
-
-Returns:
-    _type_: _description_
-"""
-class TestVehicleTaxCalculations2023(unittest.TestCase):
-    YEAR = 2023
-    
+class TestCalcMultiplier(unittest.TestCase):
     def test_calc_multiplier(self):
         # Test cases for calc_multiplier
         self.assertEqual(calc_multiplier(950), 0, "Weight below cutoff should return 0")
@@ -18,6 +11,14 @@ class TestVehicleTaxCalculations2023(unittest.TestCase):
         self.assertEqual(calc_multiplier(1250), 3, "Cutoff + 350 should return 3")
         self.assertEqual(calc_multiplier(900), 0, "Exact cutoff should return 0")
         self.assertEqual(calc_multiplier(3300, cut_off=3300), 0, "Custom cutoff matches weight")
+
+"""Tests validated for 2024 with the Motorrijtuigenbelasting tool from the Belastingdienst
+
+Returns:
+    _type_: _description_
+"""
+class TestVehicleTaxCalculations2023(unittest.TestCase):
+    YEAR = 2023
     
     def test_calc_opcenten(self):
         # Test cases for calc_opcenten
@@ -47,14 +48,6 @@ class TestVehicleTaxCalculations2023(unittest.TestCase):
 
 class TestVehicleTaxCalculations2024(unittest.TestCase):
     YEAR = 2024
-    
-    def test_calc_multiplier(self):
-        # Test cases for calc_multiplier
-        self.assertEqual(calc_multiplier(950), 0, "Weight below cutoff should return 0")
-        self.assertEqual(calc_multiplier(1000), 1, "Exact cutoff + 100 should return 1")
-        self.assertEqual(calc_multiplier(1250), 3, "Cutoff + 350 should return 3")
-        self.assertEqual(calc_multiplier(900), 0, "Exact cutoff should return 0")
-        self.assertEqual(calc_multiplier(3300, cut_off=3300), 0, "Custom cutoff matches weight")
     
     def test_calc_opcenten(self):
         # Test cases for calc_opcenten

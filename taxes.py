@@ -103,7 +103,6 @@ def calc_opcenten(weight: int, province: str, year: int) -> float:
         rate = opcenten_brackets[-1][1]  # Use the last bracket's rate as the base
         base_rate = rate + (multiplier * excess_rate)
 
-    print(f"opcenten base: {base_rate}")
     return int(base_rate * (OPCENTEN[province][year] / 100))
 
 def calculate_tax(

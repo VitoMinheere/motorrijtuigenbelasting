@@ -43,7 +43,7 @@ class TestVehicleTaxCalculations2023(unittest.TestCase):
         province = "noord-holland"
         self.YEAR = 2023
         energy_source = EnergySource.BENZINE
-        result = 153
+        result = 154
 
         self.assertEqual(
             calculate_tax(energy_source, weight, province, self.YEAR), result
@@ -84,6 +84,27 @@ class TestVehicleTaxCalculations2024(unittest.TestCase):
         energy_source = EnergySource.ELEKTRICITEIT
         self.assertEqual(calculate_tax(energy_source, weight, province, self.YEAR), 0)
 
+    def test_calculate_tax_lpg_g3(self):
+        # Test cases for calculate_tax
+        weight = 1200
+        province = "noord-holland"
+        energy_source = EnergySource.LPG_G3
+        result = 238
+
+        self.assertEqual(
+            calculate_tax(energy_source, weight, province, self.YEAR), result
+        )  
+    
+    def test_calculate_tax_lpg_g3_without_fuel_tax(self):
+        # Test cases for calculate_tax
+        weight = 720
+        province = "noord-holland"
+        energy_source = EnergySource.LPG_G3
+        result = 51
+
+        self.assertEqual(
+            calculate_tax(energy_source, weight, province, self.YEAR), result
+        )
 
 if __name__ == "__main__":
     unittest.main()

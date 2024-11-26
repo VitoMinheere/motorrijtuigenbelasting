@@ -48,7 +48,7 @@ def calc_fuel_tax(energy_source: EnergySource, weight: int) -> float:
     if energy_source == EnergySource.DIESEL:
         return calculate_base_tax(weight, energy_source="diesel")
     elif energy_source == EnergySource.LPG_G3 and weight > 800:
-        return 16.64 + abs(16.64 * calc_multiplier(weight))
+        return round(16.64 + (16.64 * (calc_multiplier(weight, cut_off=800) - 1)))
     elif energy_source == EnergySource.OVERIGE:
         return calculate_base_tax(weight, energy_source="overige")
     return 0.0
@@ -100,15 +100,16 @@ def calc_opcenten(weight: int, province: str, year: int) -> float:
     cutoff = 900
     base_rate = 0
 
-    for max_weight, rate in opcenten_brackets:
-        if weight <= max_weight:
-            base_rate = rate
-
     # Apply excess rate for weights above the cutoff
     if weight >= cutoff:
-        multiplier = max(0, (weight - cutoff) // 100) - 1
+        multiplier = calc_multiplier(weight, cutoff) - 1
         rate = opcenten_brackets[-1][1]  # Use the last bracket's rate as the base
         base_rate = rate + (multiplier * excess_rate)
+    else:
+        for max_weight, rate in opcenten_brackets:
+            if weight <= max_weight:
+                base_rate = rate
+                break
 
     return int(base_rate * (OPCENTEN[province][year] / 100))
 
@@ -143,14 +144,15 @@ def calculate_tax(
         else:
             base_tax *= 1.0  # 100% of base tax
 
+    # Fuel-specific tax
+    fuel_tax = calc_fuel_tax(energy_source, rounded_weight)
+    base_tax += fuel_tax
+
     # Apply inflation adjustment if applicable
     if year in INFLATION:
         base_tax *= 1 + INFLATION[year]
 
-    # Fuel-specific tax
-    fuel_tax = calc_fuel_tax(energy_source, rounded_weight)
-
     # Provincial opcenten tax
-    opcenten = calc_opcenten(weight, province, year)
+    opcenten = calc_opcenten(rounded_weight, province, year)
 
-    return int(base_tax + fuel_tax + opcenten)
+    return round(base_tax + opcenten)

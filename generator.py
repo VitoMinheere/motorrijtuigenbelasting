@@ -1,5 +1,4 @@
 import json
-from collections import defaultdict
 
 from taxes import EnergySource, calculate_tax
 
@@ -10,20 +9,22 @@ CAR_WEIGHTS = range(500, 3300, 100)
 PROVINCES = [
     "drenthe",
     # "flevoland",
-    # "friesland", 
-    # "gelderland", 
-    # "groningen", 
+    # "friesland",
+    # "gelderland",
+    # "groningen",
     # "limburg",
-    # "noord-brabant", 
-    # "noord-holland", 
+    # "noord-brabant",
+    # "noord-holland",
     # "overijssel",
-    # "utrecht", 
-    # "zeeland", 
+    # "utrecht",
+    # "zeeland",
     # "zuid-holland"
-    ]
+]
+
 
 class AutoVivification(dict):
     """Implementation of perl's autovivification feature."""
+
     def __getitem__(self, item):
         try:
             return dict.__getitem__(self, item)
@@ -31,18 +32,14 @@ class AutoVivification(dict):
             value = self[item] = type(self)()
             return value
 
+
 results = AutoVivification()
 
 for province in PROVINCES:
     for weight_class in CAR_WEIGHTS:
         for year in YEARS:
-            tax = calculate_tax(
-                FUEL_TYPE,
-                weight_class,
-                province,
-                year
-            )
+            tax = calculate_tax(FUEL_TYPE, weight_class, province, year)
             results[province][str(weight_class)][str(year)] = tax
 
-with open('output/drenthe_benzine.json', 'w') as convert_file: 
-     convert_file.write(json.dumps(results))
+with open("output/drenthe_benzine.json", "w") as convert_file:
+    convert_file.write(json.dumps(results))

@@ -1,7 +1,6 @@
 import unittest
 from taxes import calculate_tax, calc_opcenten, calc_multiplier
 from vehicle_types import EnergySource
-from constants import OPCENTEN
 
 
 class TestCalcMultiplier(unittest.TestCase):

@@ -123,8 +123,8 @@ class TestVehicleTaxCalculations2024(unittest.TestCase):
 
         self.assertEqual(
             calculate_tax(energy_source, weight, province, self.YEAR), result
-        )  
-    
+        )
+
     def test_calculate_tax_lpg_g3_without_fuel_tax(self):
         # Test cases for calculate_tax
         weight = 720
@@ -179,6 +179,7 @@ class TestVehicleTaxCalculations2024(unittest.TestCase):
         self.assertEqual(
             calculate_tax(energy_source, weight, province, self.YEAR), result
         )
+
 
 if __name__ == "__main__":
     unittest.main()

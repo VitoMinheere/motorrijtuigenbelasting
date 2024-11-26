@@ -23,6 +23,7 @@ def calc_multiplier(weight: int, cut_off: int = 900, step: int = 100) -> int:
         return round((weight - cut_off) // step)
     return 0
 
+
 def calc_fuel_tax(energy_source: EnergySource, weight: int) -> float:
     """Calculate extra fuel tax based on energy source."""
     if energy_source == EnergySource.DIESEL:
@@ -127,15 +128,13 @@ def calculate_tax(
         else:
             base_tax *= 1.0  # 100% of base tax
 
-
     # Fuel-specific tax
     fuel_tax = calc_fuel_tax(energy_source, rounded_weight)
     base_tax += fuel_tax
 
     # Apply inflation adjustment if applicable
     if year in INFLATION:
-        base_tax *= (1 + INFLATION[year])
-
+        base_tax *= 1 + INFLATION[year]
 
     # Provincial opcenten tax
     opcenten = calc_opcenten(rounded_weight, province, year)

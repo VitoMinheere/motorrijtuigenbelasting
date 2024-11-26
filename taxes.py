@@ -24,32 +24,13 @@ def calc_multiplier(weight: int, cut_off: int = 900, step: int = 100) -> int:
     return 0
 
 
-def vehicle_tax(weight: int) -> float:
-    """Calculate base tax for weight class
-    source: https://wetten.overheid.nl/jci1.3:c:BWBR0006324&hoofdstuk=IV&afdeling=2&artikel=23&z=2023-01-01&g=2023-01-01
-    """
-    if weight <= 500:
-        return 18.75
-    elif weight <= 600:
-        return 25.44
-    elif weight <= 700:
-        return 32.33
-    elif weight <= 800:
-        return 42.20
-    # From here excess weight is calculated per 100kg
-    elif weight >= 900 and weight < 3300:
-        return 56.13 + (15.09 * calc_multiplier(weight))
-    elif weight >= 3300:
-        return 424.29 + (10.48 * calc_multiplier(weight, cut_off=3300))
-
-
 def calc_fuel_tax(energy_source: EnergySource, weight: int) -> float:
     """Calculate extra fuel tax based on energy source."""
     if energy_source == EnergySource.DIESEL:
         return calculate_base_tax(weight, energy_source="diesel")
     elif energy_source == EnergySource.LPG_G3 and weight > 800:
-        return 16.64 + abs(16.64 * calc_multiplier(weight))
-    elif energy_source == EnergySource.OVERIGE:
+        return round(16.64 * calc_multiplier(weight, cut_off=800))
+    elif energy_source in [EnergySource.LPG, EnergySource.OVERIGE]:
         return calculate_base_tax(weight, energy_source="overige")
     return 0.0
 
@@ -59,6 +40,7 @@ def calculate_base_tax(
 ) -> float:
     """
     Generalized base tax calculator based on weight and energy source.
+    source: https://wetten.overheid.nl/jci1.3:c:BWBR0006324&hoofdstuk=IV&afdeling=2&artikel=23&z=2023-01-01&g=2023-01-01
 
     Args:
         weight (int): Rounded weight of the vehicle.
@@ -71,15 +53,17 @@ def calculate_base_tax(
     tax_brackets = WEIGHT_TAX_BRACKETS[energy_source]
     excess_rate = EXCESS_RATES[energy_source]
 
-    for max_weight, rate in tax_brackets:
-        if weight <= max_weight:
-            return rate
-
     # Apply excess rate for weights above the cutoff
     if weight >= cutoff:
         multiplier = calc_multiplier(weight, cutoff)
         base_rate = tax_brackets[-1][1]  # Use the last bracket's rate as the base
         return base_rate + (multiplier * excess_rate)
+        # TODO won't work for BENZINE > 3300
+        # return 424.29 + (10.48 * calc_multiplier(weight, cut_off=3300))
+    else:
+        for max_weight, rate in tax_brackets:
+            if weight <= max_weight:
+                return rate
 
     return 0.0
 
@@ -100,15 +84,16 @@ def calc_opcenten(weight: int, province: str, year: int) -> float:
     cutoff = 900
     base_rate = 0
 
-    for max_weight, rate in opcenten_brackets:
-        if weight <= max_weight:
-            base_rate = rate
-
     # Apply excess rate for weights above the cutoff
     if weight >= cutoff:
-        multiplier = max(0, (weight - cutoff) // 100) - 1
+        multiplier = calc_multiplier(weight, cutoff) - 1
         rate = opcenten_brackets[-1][1]  # Use the last bracket's rate as the base
         base_rate = rate + (multiplier * excess_rate)
+    else:
+        for max_weight, rate in opcenten_brackets:
+            if weight <= max_weight:
+                base_rate = rate
+                break
 
     return int(base_rate * (OPCENTEN[province][year] / 100))
 
@@ -143,14 +128,15 @@ def calculate_tax(
         else:
             base_tax *= 1.0  # 100% of base tax
 
+    # Fuel-specific tax
+    fuel_tax = calc_fuel_tax(energy_source, rounded_weight)
+    base_tax += fuel_tax
+
     # Apply inflation adjustment if applicable
     if year in INFLATION:
         base_tax *= 1 + INFLATION[year]
 
-    # Fuel-specific tax
-    fuel_tax = calc_fuel_tax(energy_source, rounded_weight)
-
     # Provincial opcenten tax
-    opcenten = calc_opcenten(weight, province, year)
+    opcenten = calc_opcenten(rounded_weight, province, year)
 
-    return int(base_tax + fuel_tax + opcenten)
+    return round(base_tax + opcenten)

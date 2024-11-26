@@ -37,7 +37,22 @@ class TestVehicleTaxCalculations2023(unittest.TestCase):
         with self.assertRaises(KeyError):
             calc_opcenten(weight, "Non-existent", self.YEAR)
 
-    def test_calculate_tax(self):
+    def test_calculate_tax_benzine_without_excess_weight(self):
+        # Test cases for calculate_tax
+        weight = 720
+        province = "noord-holland"
+        energy_source = EnergySource.BENZINE
+        result = 47
+
+        self.assertEqual(
+            calculate_tax(energy_source, weight, province, self.YEAR), result
+        )
+
+        # Edge case: Electric car before 2025
+        energy_source = EnergySource.ELEKTRICITEIT
+        self.assertEqual(calculate_tax(energy_source, weight, province, self.YEAR), 0)
+
+    def test_calculate_tax_with_excess_weight(self):
         # Test cases for calculate_tax
         weight = 1200
         province = "noord-holland"
@@ -69,7 +84,22 @@ class TestVehicleTaxCalculations2024(unittest.TestCase):
         with self.assertRaises(KeyError):
             calc_opcenten(weight, "Non-existent", self.YEAR)
 
-    def test_calculate_tax(self):
+    def test_calculate_tax_benzine_without_excess_weight(self):
+        # Test cases for calculate_tax
+        weight = 720
+        province = "noord-holland"
+        energy_source = EnergySource.BENZINE
+        result = 51
+
+        self.assertEqual(
+            calculate_tax(energy_source, weight, province, self.YEAR), result
+        )
+
+        # Edge case: Electric car before 2025
+        energy_source = EnergySource.ELEKTRICITEIT
+        self.assertEqual(calculate_tax(energy_source, weight, province, self.YEAR), 0)
+
+    def test_calculate_tax_benzine_with_excess_weight(self):
         # Test cases for calculate_tax
         weight = 1200
         province = "noord-holland"
@@ -101,6 +131,50 @@ class TestVehicleTaxCalculations2024(unittest.TestCase):
         province = "noord-holland"
         energy_source = EnergySource.LPG_G3
         result = 51
+
+        self.assertEqual(
+            calculate_tax(energy_source, weight, province, self.YEAR), result
+        )
+
+    def test_calculate_tax_lpg(self):
+        # Test cases for calculate_tax
+        weight = 720
+        province = "noord-holland"
+        energy_source = EnergySource.LPG
+        result = 183
+
+        self.assertEqual(
+            calculate_tax(energy_source, weight, province, self.YEAR), result
+        )
+
+    def test_calculate_tax_lpg_with_excess_weight(self):
+        # Test cases for calculate_tax
+        weight = 1200
+        province = "noord-holland"
+        energy_source = EnergySource.LPG
+        result = 382
+
+        self.assertEqual(
+            calculate_tax(energy_source, weight, province, self.YEAR), result
+        )
+
+    def test_calculate_tax_other_fuel(self):
+        # Test cases for calculate_tax
+        weight = 720
+        province = "noord-holland"
+        energy_source = EnergySource.OVERIGE
+        result = 183
+
+        self.assertEqual(
+            calculate_tax(energy_source, weight, province, self.YEAR), result
+        )
+
+    def test_calculate_tax_other_with_excess_weight(self):
+        # Test cases for calculate_tax
+        weight = 1200
+        province = "noord-holland"
+        energy_source = EnergySource.OVERIGE
+        result = 382
 
         self.assertEqual(
             calculate_tax(energy_source, weight, province, self.YEAR), result

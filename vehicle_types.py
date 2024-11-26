@@ -1,14 +1,18 @@
 from enum import Enum
 
+
 class EnergySource(Enum):
-    BENZINE = 'Benzine'
-    DIESEL = 'Diesel'
-    LPG_G3 = 'LPG G3'
-    ELEKTRICITEIT = 'Elektrisch'
-    OVERIGE = 'Overige'
+    BENZINE = "Benzine"
+    DIESEL = "Diesel"
+    LPG = "LPG"
+    LPG_G3 = "LPG G3"
+    ELEKTRICITEIT = "Elektrisch"
+    OVERIGE = "Overige"
+
 
 class Vehicle(Enum):
-    PERSONEN_AUTO = 'Personen auto'
+    PERSONEN_AUTO = "Personen auto"
+
 
 class VehicleTaxClass(Enum):
     VOLLEDIG = "Volledig"
@@ -16,6 +20,7 @@ class VehicleTaxClass(Enum):
     KWART_TARIEF = "Kwart tarief"
     # After 40 years
     OLDTIMER = "Oldtimer"
+
 
 """
 Oldtimer rules:

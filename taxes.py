@@ -1,11 +1,12 @@
 from vehicle_types import EnergySource
 from constants import (
-    WEIGHT_TAX_BRACKETS, 
-    EXCESS_RATES, 
+    WEIGHT_TAX_BRACKETS,
+    EXCESS_RATES,
     INFLATION,
     OPCENTEN_BRACKETS,
-    OPCENTEN
+    OPCENTEN,
 )
+
 
 def calc_multiplier(weight: int, cut_off: int = 900, step: int = 100) -> int:
     """Calculate the added tax based on weight of vehicle
@@ -22,23 +23,25 @@ def calc_multiplier(weight: int, cut_off: int = 900, step: int = 100) -> int:
         return round((weight - cut_off) // step)
     return 0
 
+
 def vehicle_tax(weight: int) -> float:
     """Calculate base tax for weight class
     source: https://wetten.overheid.nl/jci1.3:c:BWBR0006324&hoofdstuk=IV&afdeling=2&artikel=23&z=2023-01-01&g=2023-01-01
     """
-    if weight <= 500: 
+    if weight <= 500:
         return 18.75
-    elif weight <= 600: 
+    elif weight <= 600:
         return 25.44
-    elif weight <= 700: 
+    elif weight <= 700:
         return 32.33
-    elif weight <= 800: 
+    elif weight <= 800:
         return 42.20
     # From here excess weight is calculated per 100kg
     elif weight >= 900 and weight < 3300:
         return 56.13 + (15.09 * calc_multiplier(weight))
     elif weight >= 3300:
         return 424.29 + (10.48 * calc_multiplier(weight, cut_off=3300))
+
 
 def calc_fuel_tax(energy_source: EnergySource, weight: int) -> float:
     """Calculate extra fuel tax based on energy source."""
@@ -50,7 +53,10 @@ def calc_fuel_tax(energy_source: EnergySource, weight: int) -> float:
         return calculate_base_tax(weight, energy_source="overige")
     return 0.0
 
-def calculate_base_tax(weight: int, energy_source: str = "benzine", cutoff: int = 900) -> float:
+
+def calculate_base_tax(
+    weight: int, energy_source: str = "benzine", cutoff: int = 900
+) -> float:
     """
     Generalized base tax calculator based on weight and energy source.
 
@@ -76,6 +82,7 @@ def calculate_base_tax(weight: int, energy_source: str = "benzine", cutoff: int 
         return base_rate + (multiplier * excess_rate)
 
     return 0.0
+
 
 def calc_opcenten(weight: int, province: str, year: int) -> float:
     """Calculate the provincional added taxes
@@ -105,6 +112,7 @@ def calc_opcenten(weight: int, province: str, year: int) -> float:
 
     return int(base_rate * (OPCENTEN[province][year] / 100))
 
+
 def calculate_tax(
     energy_source: EnergySource, weight: int, province: str, year: int
 ) -> float:
@@ -124,7 +132,7 @@ def calculate_tax(
 
     base_tax = calculate_base_tax(rounded_weight)
 
-     # Step 3: Handle energy-specific adjustments
+    # Step 3: Handle energy-specific adjustments
     if energy_source == EnergySource.ELEKTRICITEIT:
         if year < 2025:
             return 0  # No tax for electric cars before 2025
@@ -137,7 +145,7 @@ def calculate_tax(
 
     # Apply inflation adjustment if applicable
     if year in INFLATION:
-        base_tax *= (1 + INFLATION[year])
+        base_tax *= 1 + INFLATION[year]
 
     # Fuel-specific tax
     fuel_tax = calc_fuel_tax(energy_source, rounded_weight)

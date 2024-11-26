@@ -15,7 +15,7 @@ INFLATION = {
     2021: 0.016,
     2022: 0.013,
     2023: 0.063,
-    2024: 0.099
+    2024: 0.099,
 }
 
 # Define weight tax brackets per energy source
@@ -47,17 +47,17 @@ EXCESS_RATES: Dict[str, float] = {
     "benzine": 15.09,
     "overige": 16.50,
     "diesel": 18.00,
-    "opcenten": 11.68
+    "opcenten": 11.68,
 }
 
 OPCENTEN_BRACKETS: list[Tuple[int, float]] = [
-        (500, 14.5),
-        (600, 17.33),
-        (700, 20.40),
-        (800, 26.98),
-        (900, 34.12),
-        (901, 45.81) # Hack to get the base_rate for > cutfoff values
-    ]
+    (500, 14.5),
+    (600, 17.33),
+    (700, 20.40),
+    (800, 26.98),
+    (900, 34.12),
+    (901, 45.81),  # Hack to get the base_rate for > cutfoff values
+]
 
 
 """Percentages of base tax added to total tax amount per province

@@ -1,8 +1,11 @@
-from enum import Enum
-
 from vehicle_types import EnergySource
-from opcenten import OPCENTEN
-from constants import WEIGHT_TAX_BRACKETS, EXCESS_RATES, INFLATION
+from constants import (
+    WEIGHT_TAX_BRACKETS, 
+    EXCESS_RATES, 
+    INFLATION,
+    OPCENTEN_BRACKETS,
+    OPCENTEN
+)
 
 def calc_multiplier(weight: int, cut_off: int = 900, step: int = 100) -> int:
     """Calculate the added tax based on weight of vehicle
@@ -37,37 +40,6 @@ def vehicle_tax(weight: int) -> float:
     elif weight >= 3300:
         return 424.29 + (10.48 * calc_multiplier(weight, cut_off=3300))
 
-def calc_opcenten(weight: int, province: str, year: int) -> float:
-    """Calculate the provincional added taxes
-
-    Args:
-        weight (int): Rounded weight of vehicle
-        province (str): Name of the province
-        year (int): Year of calculation
-
-    Returns:
-        float: Amount of tax added
-    """
-
-    base = 0
-    if weight <= 500: 
-        base = 14.5
-    elif weight <= 600: 
-        base = 17.33
-    elif weight <= 700: 
-        base = 20.40
-    elif weight <= 800: 
-        base =  26.98
-    elif weight <= 900:
-        base = 34.12
-    # From here excess weight is calculated per 100kg
-    elif weight > 900 and weight < 3300:
-        base = 45.81 + (11.68 * (calc_multiplier(weight) - 1))
-    
-    # print(f"opcenten base: {base}")
-    return base * (OPCENTEN[province][year] / 100)
-
-
 def calc_fuel_tax(energy_source: EnergySource, weight: int) -> float:
     """Calculate extra fuel tax based on energy source."""
     if energy_source == EnergySource.DIESEL:
@@ -99,7 +71,7 @@ def calculate_base_tax(weight: int, energy_source: str = "benzine", cutoff: int 
 
     # Apply excess rate for weights above the cutoff
     if weight >= cutoff:
-        multiplier = max(0, (weight - cutoff) // 100)
+        multiplier = calc_multiplier(weight, cutoff)
         base_rate = tax_brackets[-1][1]  # Use the last bracket's rate as the base
         return base_rate + (multiplier * excess_rate)
 
@@ -116,24 +88,23 @@ def calc_opcenten(weight: int, province: str, year: int) -> float:
     Returns:
         float: Amount of tax added
     """
+    opcenten_brackets = OPCENTEN_BRACKETS
+    excess_rate = EXCESS_RATES["opcenten"]
+    cutoff = 900
+    base_rate = 0
 
-    base = 0
-    if weight <= 500: 
-        base = 14.5
-    elif weight <= 600: 
-        base = 17.33
-    elif weight <= 700: 
-        base = 20.40
-    elif weight <= 800: 
-        base =  26.98
-    elif weight <= 900:
-        base = 34.12
-    # From here excess weight is calculated per 100kg
-    elif weight > 900 and weight < 3300:
-        base = 45.81 + (11.68 * (calc_multiplier(weight) - 1))
-    
-    # print(f"opcenten base: {base}")
-    return base * (OPCENTEN[province][year] / 100)
+    for max_weight, rate in opcenten_brackets:
+        if weight <= max_weight:
+            base_rate = rate
+
+    # Apply excess rate for weights above the cutoff
+    if weight >= cutoff:
+        multiplier = max(0, (weight - cutoff) // 100) - 1
+        rate = opcenten_brackets[-1][1]  # Use the last bracket's rate as the base
+        base_rate = rate + (multiplier * excess_rate)
+
+    print(f"opcenten base: {base_rate}")
+    return int(base_rate * (OPCENTEN[province][year] / 100))
 
 def calculate_tax(
     energy_source: EnergySource, weight: int, province: str, year: int

@@ -29,7 +29,7 @@ def calc_fuel_tax(energy_source: EnergySource, weight: int) -> float:
     if energy_source == EnergySource.DIESEL:
         return calculate_base_tax(weight, energy_source="diesel")
     elif energy_source == EnergySource.LPG_G3 and weight > 800:
-        return round(16.64 * calc_multiplier(weight, cut_off=800))
+        return 16.64 * calc_multiplier(weight, cut_off=800)
     elif energy_source in [EnergySource.LPG, EnergySource.OVERIGE]:
         return calculate_base_tax(weight, energy_source="overige")
     return 0.0
@@ -55,11 +55,11 @@ def calculate_base_tax(
 
     # Apply excess rate for weights above the cutoff
     if weight >= cutoff:
+        if weight >= 3300:
+            return 424.29 + (10.48 * (calc_multiplier(weight, cut_off=3300) - 1))
         multiplier = calc_multiplier(weight, cutoff)
         base_rate = tax_brackets[-1][1]  # Use the last bracket's rate as the base
         return base_rate + (multiplier * excess_rate)
-        # TODO won't work for BENZINE > 3300
-        # return 424.29 + (10.48 * calc_multiplier(weight, cut_off=3300))
     else:
         for max_weight, rate in tax_brackets:
             if weight <= max_weight:
@@ -95,7 +95,7 @@ def calc_opcenten(weight: int, province: str, year: int) -> float:
                 base_rate = rate
                 break
 
-    return int(base_rate * (OPCENTEN[province][year] / 100))
+    return base_rate * (OPCENTEN[province][year] / 100)
 
 
 def calculate_tax(
@@ -113,9 +113,9 @@ def calculate_tax(
     Returns:
         float: Total tax amount.
     """
-    rounded_weight = 100 * round(weight / 100)
+    rounded_weight = 100 * int(weight / 100)
 
-    base_tax = calculate_base_tax(rounded_weight)
+    base_tax = round(calculate_base_tax(rounded_weight), 2)
 
     # Step 3: Handle energy-specific adjustments
     if energy_source == EnergySource.ELEKTRICITEIT:
@@ -129,14 +129,16 @@ def calculate_tax(
             base_tax *= 1.0  # 100% of base tax
 
     # Fuel-specific tax
-    fuel_tax = calc_fuel_tax(energy_source, rounded_weight)
+    fuel_tax = round(calc_fuel_tax(energy_source, rounded_weight), 2)
     base_tax += fuel_tax
 
     # Apply inflation adjustment if applicable
     if year in INFLATION:
-        base_tax *= 1 + INFLATION[year]
+        base_tax = round(base_tax * (1 + INFLATION[year]), 2)
 
     # Provincial opcenten tax
-    opcenten = calc_opcenten(rounded_weight, province, year)
+    opcenten = round(calc_opcenten(rounded_weight, province, year), 2)
 
-    return round(base_tax + opcenten)
+    # Belastingdienst always rounds down to a whole number
+    # https://www.cbs.nl/nl-nl/nieuws/2019/50/bijna-6-1-miljard-euro-aan-wegenbelasting-in-2020/afronding-motorrijtuigenbelasting
+    return int(base_tax + opcenten)

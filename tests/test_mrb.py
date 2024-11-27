@@ -31,7 +31,7 @@ class TestVehicleTaxCalculations2023(unittest.TestCase):
         weight = 1200
         result = 46  # Checked with tool
 
-        self.assertEqual(calc_opcenten(weight, province, self.YEAR), result)
+        self.assertEqual(int(calc_opcenten(weight, province, self.YEAR)), result)
 
         # Edge case: Non-existent province
         with self.assertRaises(KeyError):
@@ -42,7 +42,7 @@ class TestVehicleTaxCalculations2023(unittest.TestCase):
         weight = 720
         province = "noord-holland"
         energy_source = EnergySource.BENZINE
-        result = 47
+        result = 48
 
         self.assertEqual(
             calculate_tax(energy_source, weight, province, self.YEAR), result
@@ -78,7 +78,7 @@ class TestVehicleTaxCalculations2024(unittest.TestCase):
         weight = 1200
         result = 53  # Checked with tool
 
-        self.assertEqual(calc_opcenten(weight, province, self.YEAR), result)
+        self.assertEqual(int(calc_opcenten(weight, province, self.YEAR)), result)
 
         # Edge case: Non-existent province
         with self.assertRaises(KeyError):
@@ -113,6 +113,17 @@ class TestVehicleTaxCalculations2024(unittest.TestCase):
         # Edge case: Electric car before 2025
         energy_source = EnergySource.ELEKTRICITEIT
         self.assertEqual(calculate_tax(energy_source, weight, province, self.YEAR), 0)
+    
+    def test_calculate_tax_benzine_with_heavy(self):
+        # Test cases for calculate_tax
+        weight = 3400
+        province = "noord-holland"
+        energy_source = EnergySource.BENZINE
+        result = 719
+
+        self.assertEqual(
+            calculate_tax(energy_source, weight, province, self.YEAR), result
+        )
 
     def test_calculate_tax_lpg_g3(self):
         # Test cases for calculate_tax
@@ -180,6 +191,16 @@ class TestVehicleTaxCalculations2024(unittest.TestCase):
             calculate_tax(energy_source, weight, province, self.YEAR), result
         )
 
+    def test_calculate_tax_diesel(self):
+        # Test cases for calculate_tax
+        weight = 720
+        province = "noord-holland"
+        energy_source = EnergySource.DIESEL
+        result = 161
+
+        self.assertEqual(
+            calculate_tax(energy_source, weight, province, self.YEAR), result
+        )
 
 if __name__ == "__main__":
     unittest.main()

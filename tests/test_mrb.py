@@ -116,10 +116,10 @@ class TestVehicleTaxCalculations2024(unittest.TestCase):
     
     def test_calculate_tax_benzine_with_heavy(self):
         # Test cases for calculate_tax
-        weight = 3400
+        weight = 3500
         province = "noord-holland"
         energy_source = EnergySource.BENZINE
-        result = 719
+        result = 739
 
         self.assertEqual(
             calculate_tax(energy_source, weight, province, self.YEAR), result

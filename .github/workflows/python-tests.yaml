@@ -28,7 +28,7 @@ jobs:
 
       # Step 4: Run tests
       - name: Run unittest
-        run: python -m unittest tests/test_mrb.py
+        run: python -m unittest discover -s tests
 
       # Step 5: Check code formatting
       - name: Run Ruff

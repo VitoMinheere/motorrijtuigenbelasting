@@ -20,7 +20,7 @@ class Vehicle(ABC):
         self, weight: int, energy_source: EnergySource, manufacturing_year: int = None
     ):
         self.rounded_weight = 100 * int(weight / 100)
-        self.energy_source = energy_source#.value
+        self.energy_source = energy_source  # .value
         self.manufacturing_year = manufacturing_year
 
     def set_calculation_year(self, year: int):

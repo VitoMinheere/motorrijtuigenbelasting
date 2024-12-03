@@ -113,7 +113,7 @@ class TestVehicleTaxCalculations2024(unittest.TestCase):
         # Edge case: Electric car before 2025
         energy_source = EnergySource.ELEKTRICITEIT
         self.assertEqual(calculate_tax(energy_source, weight, province, self.YEAR), 0)
-    
+
     def test_calculate_tax_benzine_with_heavy(self):
         # Test cases for calculate_tax
         weight = 3500
@@ -201,6 +201,7 @@ class TestVehicleTaxCalculations2024(unittest.TestCase):
         self.assertEqual(
             calculate_tax(energy_source, weight, province, self.YEAR), result
         )
+
 
 if __name__ == "__main__":
     unittest.main()

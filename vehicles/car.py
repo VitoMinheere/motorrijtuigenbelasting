@@ -6,12 +6,20 @@ LPG_CUTOFF = 800
 
 
 class Car(Vehicle):
-    def __init__(self, weight: int, energy_source: EnergySource, manufacturing_year: int = None, co2_emissions: int = None):
+    def __init__(
+        self,
+        weight: int,
+        energy_source: EnergySource,
+        manufacturing_year: int = None,
+        co2_emissions: int = None,
+    ):
         super().__init__(weight, energy_source, manufacturing_year)
         self.co2_emissions = co2_emissions
 
     def calculate_base_tax(
-        self, energy_source: EnergySource = EnergySource.BENZINE, cutoff: int = BENZINE_CUTOFF
+        self,
+        energy_source: EnergySource = EnergySource.BENZINE,
+        cutoff: int = BENZINE_CUTOFF,
     ) -> float:
         """
         Generalized base tax calculator based on weight and energy source.
@@ -31,9 +39,7 @@ class Car(Vehicle):
         # Apply excess rate for weights above the cutoff
         if self.rounded_weight >= cutoff:
             if self.rounded_weight >= 3300:
-                return 424.29 + (
-                    10.48 * (self.calculate_multiplier(cut_off=3300) - 1)
-                )
+                return 424.29 + (10.48 * (self.calculate_multiplier(cut_off=3300) - 1))
 
             multiplier = self.calculate_multiplier(cutoff)
             base_rate = tax_brackets[-1][1]  # Use the last bracket's rate as the base
@@ -53,9 +59,11 @@ class Car(Vehicle):
         ):
             return 16.64 * self.calculate_multiplier(cut_off=LPG_CUTOFF)
 
-        elif self.energy_source not in [EnergySource.BENZINE, EnergySource.ELEKTRICITEIT]:
-             return self.calculate_base_tax(energy_source=self.energy_source)
-
+        elif self.energy_source not in [
+            EnergySource.BENZINE,
+            EnergySource.ELEKTRICITEIT,
+        ]:
+            return self.calculate_base_tax(energy_source=self.energy_source)
 
         # elif self.energy_source in [EnergySource.LPG, EnergySource.OVERIGE]:
         #     return self.calculate_base_tax(energy_source="overige")
@@ -90,9 +98,9 @@ class Car(Vehicle):
 
         total_tax = base_tax + opcenten
         # Apply discounts
-        #base_tax = self.apply_historic_tax_discount(base_tax)
+        # base_tax = self.apply_historic_tax_discount(base_tax)
         total_tax = self.apply_electric_tax_discount(total_tax)
 
         # Belastingdienst always rounds down to a whole number
         # https://www.cbs.nl/nl-nl/nieuws/2019/50/bijna-6-1-miljard-euro-aan-wegenbelasting-in-2020/afronding-motorrijtuigenbelasting
-        return int(total_tax) 
+        return int(total_tax)

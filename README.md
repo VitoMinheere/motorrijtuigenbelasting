@@ -116,7 +116,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Contact  
 
 Feel free to reach out for support or feedback:  
-- **Website**: [VitoMinheere.com](https://vitominheere.com)
-- **GitHub**: [Your GitHub Profile](https://github.com/VitoMinheere)  
-- **LinkedIn**: [Your LinkedIn Profile](https://linkedin.com/in/vitominheere)  
+- [VitoMinheere.com](https://vitominheere.com)
+- [GitHub Profile](https://github.com/VitoMinheere)  
+- [LinkedIn Profile](https://linkedin.com/in/vitominheere)  
 

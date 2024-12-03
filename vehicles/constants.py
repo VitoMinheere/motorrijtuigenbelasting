@@ -27,6 +27,20 @@ WEIGHT_TAX_BRACKETS: Dict[str, List[Tuple[int, float]]] = {
         (800, 42.20),
         (900, 56.13),
     ],
+    "lpg_g3": [  # Used for most sources
+        (500, 18.75),
+        (600, 25.44),
+        (700, 32.33),
+        (800, 42.20),
+        (900, 56.13),
+    ],
+    "elektriciteit": [  # Used for most sources
+        (500, 18.75),
+        (600, 25.44),
+        (700, 32.33),
+        (800, 42.20),
+        (900, 56.13),
+    ],
     "overige": [  # For EnergySource.OVERIGE
         (500, 86.25),
         (600, 103.39),
@@ -45,6 +59,8 @@ WEIGHT_TAX_BRACKETS: Dict[str, List[Tuple[int, float]]] = {
 
 EXCESS_RATES: Dict[str, float] = {
     "benzine": 15.09,
+    "lpg_g3": 15.09,
+    "elektriciteit": 15.09,
     "overige": 15.92,
     "diesel": 14.48,
     "opcenten": 11.68,

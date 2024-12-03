@@ -29,6 +29,7 @@ class Vehicle(ABC):
         energy_source (EnergySource): An instance of the `EnergySource` enum representing the vehicle's fuel type.
         manufacturing_year (int, optional): The year the vehicle was manufactured. Defaults to None.
     """
+
     def __init__(
         self, weight: int, energy_source: EnergySource, manufacturing_year: int = None
     ):

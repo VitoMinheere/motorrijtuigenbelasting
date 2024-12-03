@@ -16,11 +16,24 @@ class EnergySource(Enum):
 
 
 class Vehicle(ABC):
+    """
+    Abstract base class representing a generic vehicle.
+
+    Attributes:
+        rounded_weight (int): The weight of the vehicle, rounded down to the nearest hundred kilograms.
+        energy_source (EnergySource): The type of energy source used by the vehicle (e.g., benzine, diesel, electric).
+        manufacturing_year (int, optional): The year the vehicle was manufactured. Defaults to None.
+
+    Args:
+        weight (int): The weight of the vehicle in kilograms.
+        energy_source (EnergySource): An instance of the `EnergySource` enum representing the vehicle's fuel type.
+        manufacturing_year (int, optional): The year the vehicle was manufactured. Defaults to None.
+    """
     def __init__(
         self, weight: int, energy_source: EnergySource, manufacturing_year: int = None
     ):
         self.rounded_weight = 100 * int(weight / 100)
-        self.energy_source = energy_source  # .value
+        self.energy_source = energy_source
         self.manufacturing_year = manufacturing_year
 
     def set_calculation_year(self, year: int):

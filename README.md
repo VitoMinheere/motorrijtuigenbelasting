@@ -20,9 +20,8 @@ MRB-Py is a Python library designed to calculate Dutch road taxes (motorrijtuige
 2. [Usage](#usage)  
    - [Example](#example)  
 3. [Supported Vehicle Types](#supported-vehicle-types)  
-4. [Features in Detail](#features-in-detail)  
-5. [Contributing](#contributing)  
-6. [License](#license)  
+4. [Contributing](#contributing)  
+5. [License](#license)  
 
 ---
 

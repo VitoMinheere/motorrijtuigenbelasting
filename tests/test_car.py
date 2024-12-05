@@ -133,7 +133,3 @@ class TestCarTaxCalculations2024(unittest.TestCase):
         result = 161
 
         self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
-
-
-if __name__ == "__main__":
-    unittest.main()

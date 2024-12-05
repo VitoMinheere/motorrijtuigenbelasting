@@ -1,6 +1,7 @@
 from vehicles import Vehicle, EnergySource
 from .constants import OPCENTEN
 
+
 class Motorcycle(Vehicle):
     """
     Represents a motorcycle for road tax calculations.

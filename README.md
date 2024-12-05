@@ -1,9 +1,9 @@
-# MRB-Py: Dutch Road Tax Calculator  
+# Motorrijtuigenbelasting: Dutch Road Tax Calculator  
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)  
 ![Python](https://img.shields.io/badge/Python-3.10%2B-brightgreen)  
 
-MRB-Py is a Python library designed to calculate Dutch road taxes (motorrijtuigenbelasting, MRB) for passenger cars, motorcycles, and other vehicle types. It provides tools for determining taxes based on weight, fuel type, and provincial rates between 2015 and 2024. Future years will be added once the inflation numbers are in from the Belastingdienst.
+Motorrijtuigenbelasting is a Python library designed to calculate Dutch road taxes (motorrijtuigenbelasting, MRB) for passenger cars, motorcycles, and other vehicle types. It provides tools for determining taxes based on weight, fuel type, and provincial rates between 2015 and 2024. Future years will be added once the inflation numbers are in from the Belastingdienst.
 
 ## Features  
 
@@ -33,7 +33,7 @@ MRB-Py is a Python library designed to calculate Dutch road taxes (motorrijtuige
 clone the repository and install dependencies:  
 
 ```bash
-git clone https://github.com/VitoMinheere/mrb-py.git  
+git clone https://github.com/VitoMinheere/motorrijtuigenbelasting.git  
 cd mrb-py  
 pip install -r requirements.txt  
 ```

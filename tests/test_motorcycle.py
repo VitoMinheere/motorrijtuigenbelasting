@@ -26,11 +26,11 @@ class TestMotorcycleTaxCalculations2024(unittest.TestCase):
         motor = Motorcycle(weight=0, energy_source=EnergySource.BENZINE)
         result = 36
 
-        self.assertEqual(motor.calculate_total_tax(province, self.YEAR), result)
+        self.assertEqual(motor.calculate_total_tax(self.YEAR, province), result)
 
         # Edge case: Electric motor before 2025
         electric_motor = Motorcycle(weight=0, energy_source=EnergySource.ELEKTRICITEIT)
-        self.assertEqual(electric_motor.calculate_total_tax(province, self.YEAR), 0)
+        self.assertEqual(electric_motor.calculate_total_tax(self.YEAR, province), 0)
 
     def test_calculate_tax_gelderland(self):
         """Test with another province as they vary between 36 and 37"""
@@ -38,10 +38,28 @@ class TestMotorcycleTaxCalculations2024(unittest.TestCase):
         motor = Motorcycle(weight=0, energy_source=EnergySource.BENZINE)
         result = 37
 
-        self.assertEqual(motor.calculate_total_tax(province, self.YEAR), result)
+        self.assertEqual(motor.calculate_total_tax(self.YEAR, province), result)
 
         # Edge case: Electric motor before 2025
         electric_motor = Motorcycle(
             weight=720, energy_source=EnergySource.ELEKTRICITEIT
         )
-        self.assertEqual(electric_motor.calculate_total_tax(province, self.YEAR), 0)
+        self.assertEqual(electric_motor.calculate_total_tax(self.YEAR, province), 0)
+
+    def test_calculate_tax_oldtimer(self):
+        province = "gelderland"
+        motor = Motorcycle(
+            weight=0, energy_source=EnergySource.BENZINE, manufacturing_year=1980
+        )
+        result = 0
+
+        self.assertEqual(motor.calculate_total_tax(self.YEAR, province), result)
+
+    def test_calculate_tax_kwarttarief(self):
+        province = "gelderland"
+        motor = Motorcycle(
+            weight=0, energy_source=EnergySource.BENZINE, manufacturing_year=1987
+        )
+        result = 9
+
+        self.assertEqual(motor.calculate_total_tax(self.YEAR, province), result)

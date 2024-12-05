@@ -44,10 +44,10 @@ class Car(Vehicle):
             multiplier = self.calculate_multiplier(cutoff)
             base_rate = tax_brackets[-1][1]  # Use the last bracket's rate as the base
             return base_rate + (multiplier * excess_rate)
-        else:
-            for max_weight, rate in tax_brackets:
-                if self.rounded_weight <= max_weight:
-                    return rate
+
+        for max_weight, rate in tax_brackets:
+            if self.rounded_weight <= max_weight:
+                return rate
 
         return 0.0
 
@@ -59,7 +59,7 @@ class Car(Vehicle):
         ):
             return 16.64 * self.calculate_multiplier(cut_off=LPG_CUTOFF)
 
-        elif self.energy_source not in [
+        if self.energy_source not in [
             EnergySource.BENZINE,
             EnergySource.ELEKTRICITEIT,
         ]:
@@ -69,7 +69,7 @@ class Car(Vehicle):
         #     return self.calculate_base_tax(energy_source="overige")
         return 0.0
 
-    def calculate_total_tax(self, province: str, year: int) -> float:
+    def calculate_total_tax(self, year: int, province: str) -> float:
         """
         Calculate the total tax for a vehicle based on various components.
 
@@ -98,7 +98,8 @@ class Car(Vehicle):
 
         total_tax = base_tax + opcenten
         # Apply discounts
-        # base_tax = self.apply_historic_tax_discount(base_tax)
+        total_tax = self.apply_kwarttarief_discount(total_tax)
+        total_tax = self.apply_historic_tax_discount(total_tax)
         total_tax = self.apply_electric_tax_discount(total_tax)
 
         # Belastingdienst always rounds down to a whole number

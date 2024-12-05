@@ -1,10 +1,7 @@
-# constants.py
 from typing import Dict, List, Tuple
 
-"""
-Number that is used for inflation correction over taxes. Values gathered from the yearly document 
-called "Belangrijkste wijzigingen belastingen XXXX" from Rijksoverheid
-"""
+# Number that is used for inflation correction over taxes. Values gathered from the yearly document
+# called "Belangrijkste wijzigingen belastingen XXXX" from Rijksoverheid
 INFLATION = {
     2015: 0.009,
     2016: 0.005,
@@ -16,6 +13,21 @@ INFLATION = {
     2022: 0.013,
     2023: 0.063,
     2024: 0.099,
+}
+
+# Semi source https://financieel.infonu.nl/belasting/114283-wegenbelasting-2020-en-2021-oldtimer-omhoog.html
+KWARTTARIEF_MAX = {
+    2015: 120,
+    2016: 120,
+    2017: 120,
+    2018: 123,
+    2019: 125,
+    2020: 125,
+    2021: 129,
+    2022: 130,
+    2023: 138,
+    2024: 152,
+    2025: 154,
 }
 
 # Define weight tax brackets per energy source

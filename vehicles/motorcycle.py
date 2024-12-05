@@ -51,7 +51,7 @@ class Motorcycle(Vehicle):
         province_rate = OPCENTEN[province][year] / 100
         return fixed_opcenten_base * province_rate
 
-    def calculate_total_tax(self, province: str, year: int) -> int:
+    def calculate_total_tax(self, year: int, province: str) -> int:
         """
         Calculates the total tax for the motorcycle, including the base tax
         and provincial opcenten, rounded down to the nearest whole number.
@@ -70,6 +70,7 @@ class Motorcycle(Vehicle):
 
         total_tax = base_tax + opcenten
         total_tax = self.apply_electric_tax_discount(total_tax)
+        total_tax = self.apply_kwarttarief_discount(total_tax)
         total_tax = self.apply_historic_tax_discount(total_tax)
 
         return int(total_tax)

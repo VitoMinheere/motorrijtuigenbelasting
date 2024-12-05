@@ -18,6 +18,21 @@ INFLATION = {
     2024: 0.099,
 }
 
+# Semi source https://financieel.infonu.nl/belasting/114283-wegenbelasting-2020-en-2021-oldtimer-omhoog.html
+KWARTTARIEF_MAX = {
+    2015: 120,
+    2016: 120,
+    2017: 120,
+    2018: 123,
+    2019: 125,
+    2020: 125,
+    2021: 129,
+    2022: 130,
+    2023: 138,
+    2024: 152,
+    2025: 154
+}
+
 # Define weight tax brackets per energy source
 WEIGHT_TAX_BRACKETS: Dict[str, List[Tuple[int, float]]] = {
     "benzine": [  # Used for most sources

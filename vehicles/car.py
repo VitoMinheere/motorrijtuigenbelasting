@@ -98,7 +98,8 @@ class Car(Vehicle):
 
         total_tax = base_tax + opcenten
         # Apply discounts
-        # base_tax = self.apply_historic_tax_discount(base_tax)
+        total_tax = self.apply_kwarttarief_discount(total_tax)
+        total_tax = self.apply_historic_tax_discount(total_tax)
         total_tax = self.apply_electric_tax_discount(total_tax)
 
         # Belastingdienst always rounds down to a whole number

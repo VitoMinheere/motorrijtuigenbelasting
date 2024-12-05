@@ -3,7 +3,12 @@ from enum import Enum
 
 import datetime
 
-from .constants import OPCENTEN, OPCENTEN_BRACKETS, EXCESS_RATES
+from .constants import (
+    OPCENTEN, 
+    OPCENTEN_BRACKETS, 
+    EXCESS_RATES,
+    KWARTTARIEF_MAX
+)
 
 
 class EnergySource(Enum):
@@ -67,7 +72,9 @@ class Vehicle(ABC):
         return False
 
     def apply_kwarttarief_discount(self, tax: float) -> float:
-        return tax * 0.25 if self.is_kwarttarief() else tax
+        if self.is_kwarttarief() and self.energy_source == EnergySource.BENZINE:
+            return min(tax * 0.25, KWARTTARIEF_MAX[self.calculation_year])
+        return tax
 
     def is_electric(self) -> bool:
         return self.energy_source == EnergySource.ELEKTRICITEIT

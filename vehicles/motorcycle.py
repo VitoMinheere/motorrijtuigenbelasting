@@ -70,6 +70,7 @@ class Motorcycle(Vehicle):
 
         total_tax = base_tax + opcenten
         total_tax = self.apply_electric_tax_discount(total_tax)
+        total_tax = self.apply_kwarttarief_discount(total_tax)
         total_tax = self.apply_historic_tax_discount(total_tax)
 
         return int(total_tax)

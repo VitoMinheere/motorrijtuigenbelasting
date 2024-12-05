@@ -45,3 +45,17 @@ class TestMotorcycleTaxCalculations2024(unittest.TestCase):
             weight=720, energy_source=EnergySource.ELEKTRICITEIT
         )
         self.assertEqual(electric_motor.calculate_total_tax(province, self.YEAR), 0)
+
+    def test_calculate_tax_oldtimer(self):
+        province = "gelderland"
+        motor = Motorcycle(weight=0, energy_source=EnergySource.BENZINE, manufacturing_year=1980)
+        result = 0
+
+        self.assertEqual(motor.calculate_total_tax(province, self.YEAR), result)
+    
+    def test_calculate_tax_kwarttarief(self):
+        province = "gelderland"
+        motor = Motorcycle(weight=0, energy_source=EnergySource.BENZINE, manufacturing_year=1987)
+        result = 9
+
+        self.assertEqual(motor.calculate_total_tax(province, self.YEAR), result)

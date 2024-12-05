@@ -100,6 +100,32 @@ class TestCarTaxCalculations2024(unittest.TestCase):
 
         self.assertEqual(car.calculate_total_tax(PROVINCE, self.YEAR), result)
 
+    def test_calculate_tax_benzine_oldtimer(self):
+        car = Car(weight=720, energy_source=EnergySource.BENZINE, manufacturing_year=1980)
+        result = 0
+
+        self.assertEqual(car.calculate_total_tax(PROVINCE, self.YEAR), result)
+    
+    def test_calculate_tax_diesel_oldtimer(self):
+        car = Car(weight=720, energy_source=EnergySource.DIESEL, manufacturing_year=1980)
+        result = 0
+
+        self.assertEqual(car.calculate_total_tax(PROVINCE, self.YEAR), result)
+
+    def test_calculate_tax_benzine_kwarttarief(self):
+        """Kwarttarief ruling is only for benzine"""
+        car = Car(weight=720, energy_source=EnergySource.BENZINE, manufacturing_year=1987)
+        result = 12
+
+        self.assertEqual(car.calculate_total_tax(PROVINCE, self.YEAR), result)
+
+    def test_calculate_tax_diesel_kwarttarief(self):
+        """Kwarttarief ruling is only for benzine"""
+        car = Car(weight=720, energy_source=EnergySource.DIESEL, manufacturing_year=1987)
+        result = 161
+
+        self.assertEqual(car.calculate_total_tax(PROVINCE, self.YEAR), result)
+
 
 if __name__ == "__main__":
     unittest.main()

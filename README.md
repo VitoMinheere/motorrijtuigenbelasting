@@ -68,8 +68,10 @@ print(f"Total tax for your car: €{tax}")
 ### Passenger Cars  
 Supports fuel types like benzine, diesel, LPG, LPG G3, and electric vehicles.  
 
+### Motorcycles
+Rules for base tax and opcenten added. Added sources to the information in the docstring.
+
 Other vehicles types are being worked on in the following order:
-- Motorcycles
 - Oldtimers & kwarttarief
 - Diesel
 - Benzine with low emissions

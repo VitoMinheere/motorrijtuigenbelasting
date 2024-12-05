@@ -36,12 +36,13 @@ class Vehicle(ABC):
         self.rounded_weight = 100 * int(weight / 100)
         self.energy_source = energy_source
         self.manufacturing_year = manufacturing_year
+        self.calculation_year = None
 
     def set_calculation_year(self, year: int):
         self.calculation_year = year
 
     @abstractmethod
-    def calculate_base_tax(self, year: int) -> float:
+    def calculate_base_tax(self, energy_source: EnergySource) -> float:
         """Abstract method to calculate base tax."""
         pass
 
@@ -78,7 +79,7 @@ class Vehicle(ABC):
         if self.is_electric():
             if self.calculation_year < 2025:
                 return 0  # No tax for electric cars before 2025
-            elif self.calculation_year == 2025:
+            if self.calculation_year == 2025:
                 tax *= 0.25  # 25% of base tax
             elif 2026 <= self.calculation_year <= 2029:
                 tax *= 0.75  # 75% of base tax

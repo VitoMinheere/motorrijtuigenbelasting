@@ -1,10 +1,7 @@
-# constants.py
 from typing import Dict, List, Tuple
 
-"""
-Number that is used for inflation correction over taxes. Values gathered from the yearly document 
-called "Belangrijkste wijzigingen belastingen XXXX" from Rijksoverheid
-"""
+# Number that is used for inflation correction over taxes. Values gathered from the yearly document
+# called "Belangrijkste wijzigingen belastingen XXXX" from Rijksoverheid
 INFLATION = {
     2015: 0.009,
     2016: 0.005,

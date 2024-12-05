@@ -3,12 +3,7 @@ from enum import Enum
 
 import datetime
 
-from .constants import (
-    OPCENTEN, 
-    OPCENTEN_BRACKETS, 
-    EXCESS_RATES,
-    KWARTTARIEF_MAX
-)
+from .constants import OPCENTEN, OPCENTEN_BRACKETS, EXCESS_RATES, KWARTTARIEF_MAX
 
 
 class EnergySource(Enum):

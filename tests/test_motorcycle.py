@@ -48,14 +48,18 @@ class TestMotorcycleTaxCalculations2024(unittest.TestCase):
 
     def test_calculate_tax_oldtimer(self):
         province = "gelderland"
-        motor = Motorcycle(weight=0, energy_source=EnergySource.BENZINE, manufacturing_year=1980)
+        motor = Motorcycle(
+            weight=0, energy_source=EnergySource.BENZINE, manufacturing_year=1980
+        )
         result = 0
 
         self.assertEqual(motor.calculate_total_tax(province, self.YEAR), result)
-    
+
     def test_calculate_tax_kwarttarief(self):
         province = "gelderland"
-        motor = Motorcycle(weight=0, energy_source=EnergySource.BENZINE, manufacturing_year=1987)
+        motor = Motorcycle(
+            weight=0, energy_source=EnergySource.BENZINE, manufacturing_year=1987
+        )
         result = 9
 
         self.assertEqual(motor.calculate_total_tax(province, self.YEAR), result)

@@ -30,7 +30,7 @@ KWARTTARIEF_MAX = {
     2022: 130,
     2023: 138,
     2024: 152,
-    2025: 154
+    2025: 154,
 }
 
 # Define weight tax brackets per energy source

@@ -1,4 +1,4 @@
-from vehicles import Vehicle, EnergySource
+from vehicles import Vehicle
 from .constants import OPCENTEN
 
 
@@ -15,12 +15,7 @@ class Motorcycle(Vehicle):
         manufacturing_year (int, optional): Year the motorcycle was manufactured.
     """
 
-    def __init__(
-        self, weight: int, energy_source: EnergySource, manufacturing_year: int = None
-    ):
-        super().__init__(weight, energy_source, manufacturing_year)
-
-    def calculate_base_tax(self, year: int) -> float:
+    def calculate_base_tax(self) -> float:
         """
         Calculates the fixed base tax for motorcycles. This rate is fixed and
         does not change based on inflation.
@@ -65,7 +60,7 @@ class Motorcycle(Vehicle):
         """
         self.set_calculation_year(year)
 
-        base_tax = self.calculate_base_tax(year)
+        base_tax = self.calculate_base_tax()
         opcenten = round(self.calculate_opcenten(province, year), 2)
 
         total_tax = base_tax + opcenten

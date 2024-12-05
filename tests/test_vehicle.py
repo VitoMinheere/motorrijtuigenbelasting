@@ -3,6 +3,7 @@ import unittest
 from vehicles import EnergySource
 from vehicles.car import Car
 
+
 class TestCalculateMultiplier(unittest.TestCase):
 
     def test_calculate_multiplier(self):

@@ -42,14 +42,14 @@ class Vehicle(ABC):
         self.calculation_year = year
 
     @abstractmethod
-    def calculate_base_tax(self, energy_source: EnergySource) -> float:
+    def calculate_base_tax(self) -> float:
         """Abstract method to calculate base tax."""
-        pass
+        return
 
     @abstractmethod
     def calculate_total_tax(self, year: int, province: str) -> float:
         """Abstract method to calculate the total tax, optionally using province."""
-        pass
+        return
 
     def is_historic(self) -> bool:
         """Oldtimer ruling applies when vehicle is registered 40 years ago"""

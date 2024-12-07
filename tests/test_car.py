@@ -99,6 +99,25 @@ class TestCarTaxCalculations2024(unittest.TestCase):
         result = 161
 
         self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
+    
+    def test_calculate_tax_diesel_with_emission_tax(self):
+        car = Car(weight=720, energy_source=EnergySource.DIESEL, co2_emissions=True)
+        result = 189
+
+        self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
+    
+    def test_calculate_tax_diesel_with_excess_weight(self):
+        car = Car(weight=1200, energy_source=EnergySource.DIESEL)
+        result = 359
+
+        self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
+
+    def test_calculate_tax_diesel_with_excess_weight_and_emission_tax(self):
+        car = Car(weight=1200, energy_source=EnergySource.DIESEL, co2_emissions=True)
+        result = 417
+
+        self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
+
 
     def test_calculate_tax_benzine_oldtimer(self):
         car = Car(

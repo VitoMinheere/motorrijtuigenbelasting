@@ -11,7 +11,7 @@ class Car(Vehicle):
         weight: int,
         energy_source: EnergySource,
         manufacturing_year: int = None,
-        co2_emissions: int = None,
+        co2_emissions: bool = False,
     ):
         super().__init__(weight, energy_source, manufacturing_year)
         self.co2_emissions = co2_emissions
@@ -51,13 +51,21 @@ class Car(Vehicle):
 
         return 0.0
 
-    def calculate_fuel_tax(self) -> float:
+    def calculate_fuel_tax(self, base_tax: float) -> float:
         """Calculate extra fuel tax based on energy source."""
         if (
             self.energy_source == EnergySource.LPG_G3
             and self.rounded_weight > LPG_CUTOFF
         ):
             return 16.64 * self.calculate_multiplier(cut_off=LPG_CUTOFF)
+
+        if self.energy_source == EnergySource.DIESEL and self.co2_emissions:
+            # Fijnstoftoeslag
+            return (
+                1.19
+                * (base_tax + self.calculate_base_tax(energy_source=self.energy_source))
+                - base_tax
+            )
 
         if self.energy_source not in [
             EnergySource.BENZINE,
@@ -86,7 +94,7 @@ class Car(Vehicle):
         base_tax = round(self.calculate_base_tax(), 2)
 
         # Fuel-specific tax
-        fuel_tax = round(self.calculate_fuel_tax(), 2)
+        fuel_tax = round(self.calculate_fuel_tax(base_tax), 2)
         base_tax += fuel_tax
 
         # Apply inflation adjustment if applicable

@@ -61,7 +61,11 @@ class Car(Vehicle):
 
         if self.energy_source == EnergySource.DIESEL and self.co2_emissions:
             # Fijnstoftoeslag
-            return (1.19 * (base_tax + self.calculate_base_tax(energy_source=self.energy_source)) - base_tax)
+            return (
+                1.19
+                * (base_tax + self.calculate_base_tax(energy_source=self.energy_source))
+                - base_tax
+            )
 
         if self.energy_source not in [
             EnergySource.BENZINE,

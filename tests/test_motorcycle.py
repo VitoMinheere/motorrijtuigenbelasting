@@ -1,7 +1,7 @@
 import unittest
 
-from vehicles.motorcycle import Motorcycle
-from vehicles import EnergySource
+from motorrijtuigenbelasting.vehicles.motorcycle import Motorcycle
+from motorrijtuigenbelasting.vehicles import EnergySource
 
 
 class TestMotorcycleTaxCalculations2024(unittest.TestCase):

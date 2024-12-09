@@ -86,6 +86,16 @@ class Vehicle(ABC):
 
         return tax
 
+    def apply_low_emission_tax_discount(self, tax: float, low_emission: bool) -> float:
+        if low_emission:
+            if self.calculation_year < 2025:
+                return tax * 0.5 
+            elif self.calculation_year == 2025:
+                return tax * 0.75
+            else:
+                return tax
+        return tax
+
     def calculate_multiplier(self, cut_off: int = 900, step: int = 100) -> int:
         """Calculate the added tax based on weight of vehicle
 

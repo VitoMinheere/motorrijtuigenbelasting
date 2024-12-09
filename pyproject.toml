@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "motorrijtuigenbelasting"
+version = "0.1.0"
+description = "Calculate Dutch road tax Motorrijtuigenbelasting(MRB) for vehicles."
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+
+authors = [
+    {name = "Vito Minheere", email = "vito@vipyr.nl"}
+]
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent"
+]
+
+dependencies = []
+
+[project.urls]
+"Source Code" = "https://github.com/VitoMinheere/motorrijtuigenbelasting"
+"Issue Tracker" = "https://github.com/VitoMinheere/motorrijtuigenbelasting/issues"

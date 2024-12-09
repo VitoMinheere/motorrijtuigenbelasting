@@ -1,4 +1,4 @@
-from vehicles import Vehicle, EnergySource
+from ..vehicles import Vehicle, EnergySource
 from .constants import INFLATION, WEIGHT_TAX_BRACKETS, EXCESS_RATES
 
 BENZINE_CUTOFF = 900

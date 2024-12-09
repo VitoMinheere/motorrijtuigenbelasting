@@ -28,13 +28,17 @@ Motorrijtuigenbelasting is a Python library designed to calculate Dutch road tax
 ## Installation  
 
 ### Requirements  
-- Python 3.10 or higher.  
+- Python 3.7 or higher.  
 
-clone the repository and install dependencies:  
+```bash
+pip install motorrijtuigenbelasting
+```
+
+or clone the repository and install dependencies:  
 
 ```bash
 git clone https://github.com/VitoMinheere/motorrijtuigenbelasting.git  
-cd mrb-py  
+cd motorrijtuigenbelasting
 pip install -r requirements.txt  
 ```
 
@@ -47,8 +51,7 @@ pip install -r requirements.txt
 Here’s how to use MRB-Py to calculate road tax for a passenger car:  
 
 ```python
-from vehicles.car import Car
-from energy_source import EnergySource
+from motorrijtuigenbelasting import Car, EnergySource
 
 # Define car details
 car = Car(weight=1200, energy_source=EnergySource.BENZINE, manufacturing_year=2024)
@@ -56,7 +59,7 @@ car = Car(weight=1200, energy_source=EnergySource.BENZINE, manufacturing_year=20
 # Calculate total tax for Noord-Holland province in 2024
 province = "noord-holland"
 year = 2024
-tax = car.calculate_total_tax(province, year)
+tax = car.calculate_total_tax(province=province, year=year)
 
 print(f"Total tax for your car: €{tax}")
 ```

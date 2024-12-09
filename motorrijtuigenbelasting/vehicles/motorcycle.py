@@ -1,4 +1,4 @@
-from vehicles import Vehicle
+from ..vehicles import Vehicle
 from .constants import OPCENTEN
 
 

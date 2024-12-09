@@ -1,7 +1,7 @@
 import unittest
 
-from vehicles import EnergySource
-from vehicles.car import Car
+from motorrijtuigenbelasting.vehicles import EnergySource
+from motorrijtuigenbelasting.vehicles.car import Car
 
 
 class TestCalculateMultiplier(unittest.TestCase):

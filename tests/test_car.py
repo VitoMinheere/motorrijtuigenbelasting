@@ -1,7 +1,7 @@
 import unittest
 
-from vehicles.car import Car
-from vehicles import EnergySource
+from motorrijtuigenbelasting.vehicles.car import Car
+from motorrijtuigenbelasting.vehicles import EnergySource
 
 PROVINCE = "noord-holland"
 

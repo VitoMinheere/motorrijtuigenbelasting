@@ -89,7 +89,7 @@ class Vehicle(ABC):
     def apply_low_emission_tax_discount(self, tax: float, low_emission: bool) -> float:
         if low_emission:
             if self.calculation_year < 2025:
-                return tax * 0.5 
+                return tax * 0.5
             elif self.calculation_year == 2025:
                 return tax * 0.75
             else:

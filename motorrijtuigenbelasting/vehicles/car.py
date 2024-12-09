@@ -12,11 +12,11 @@ class Car(Vehicle):
         energy_source: EnergySource,
         manufacturing_year: int = None,
         co2_emissions: bool = False,
-        diesel_particles: bool = False
+        diesel_particles: bool = False,
     ):
         super().__init__(weight, energy_source, manufacturing_year)
         self.low_co2_emissions = co2_emissions
-        self.diesel_particles = diesel_particles 
+        self.diesel_particles = diesel_particles
 
     def calculate_base_tax(
         self,
@@ -110,7 +110,9 @@ class Car(Vehicle):
         # Apply discounts
         total_tax = self.apply_kwarttarief_discount(total_tax)
         total_tax = self.apply_historic_tax_discount(total_tax)
-        total_tax = self.apply_low_emission_tax_discount(total_tax, self.low_co2_emissions)
+        total_tax = self.apply_low_emission_tax_discount(
+            total_tax, self.low_co2_emissions
+        )
         total_tax = self.apply_electric_tax_discount(total_tax)
 
         # Belastingdienst always rounds down to a whole number

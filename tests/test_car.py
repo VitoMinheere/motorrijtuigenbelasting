@@ -184,61 +184,61 @@ class TestCarTaxCalculations2025(unittest.TestCase):
 
         self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
 
-        # Edge case: Electric car before 2025
+        # Edge case: Electric car in 2025
         electric_car = Car(weight=720, energy_source=EnergySource.ELEKTRICITEIT)
-        self.assertEqual(electric_car.calculate_total_tax(self.YEAR, PROVINCE), 0)
+        self.assertEqual(electric_car.calculate_total_tax(self.YEAR, PROVINCE), 12)
 
     def test_calculate_tax_benzine_with_excess_weight(self):
         car = Car(weight=1200, energy_source=EnergySource.BENZINE)
-        result = 164
+        result = 166
 
         self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
 
     def test_calculate_tax_benzine_with_heavy(self):
         car = Car(weight=3500, energy_source=EnergySource.BENZINE)
-        result = 739
+        result = 745
 
         self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
 
     def test_calculate_tax_lpg_g3(self):
         car = Car(weight=1200, energy_source=EnergySource.LPG_G3)
-        result = 238
+        result = 240
 
         self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
 
     def test_calculate_tax_lpg(self):
         car = Car(weight=720, energy_source=EnergySource.LPG)
-        result = 183
+        result = 185
 
         self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
 
     def test_calculate_tax_other_fuel(self):
         car = Car(weight=720, energy_source=EnergySource.OVERIGE)
-        result = 183
+        result = 185
 
         self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
 
     def test_calculate_tax_diesel(self):
         car = Car(weight=720, energy_source=EnergySource.DIESEL)
-        result = 161
+        result = 163
 
         self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
 
     def test_calculate_tax_diesel_with_emission_tax(self):
         car = Car(weight=720, energy_source=EnergySource.DIESEL, diesel_particles=True)
-        result = 189
+        result = 191
 
         self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
 
     def test_calculate_tax_diesel_with_excess_weight(self):
         car = Car(weight=1200, energy_source=EnergySource.DIESEL)
-        result = 359
+        result = 363
 
         self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
 
     def test_calculate_tax_diesel_with_excess_weight_and_emission_tax(self):
         car = Car(weight=1200, energy_source=EnergySource.DIESEL, diesel_particles=True)
-        result = 417
+        result = 422
 
         self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
 
@@ -272,18 +272,18 @@ class TestCarTaxCalculations2025(unittest.TestCase):
         car = Car(
             weight=720, energy_source=EnergySource.DIESEL, manufacturing_year=1987
         )
-        result = 161
+        result = 163
 
         self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
 
     def test_calculate_tax_benzine_hybrid_without_excess_weight(self):
         car = Car(weight=720, energy_source=EnergySource.BENZINE, co2_emissions=True)
-        result = 25
+        result = 38
 
         self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
 
     def test_calculate_tax_benzine_hybrid_with_excess_weight(self):
         car = Car(weight=1200, energy_source=EnergySource.BENZINE, co2_emissions=True)
-        result = 82
+        result = 124
 
         self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)

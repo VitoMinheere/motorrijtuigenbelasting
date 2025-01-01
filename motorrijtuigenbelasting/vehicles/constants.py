@@ -13,7 +13,7 @@ INFLATION = {
     2022: 0.013,
     2023: 0.063,
     2024: 0.099,
-    2025: 0.012,
+    2025: 0.1122,
 }
 
 # Semi source https://financieel.infonu.nl/belasting/114283-wegenbelasting-2020-en-2021-oldtimer-omhoog.html

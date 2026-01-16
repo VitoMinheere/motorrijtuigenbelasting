@@ -36,7 +36,7 @@ class TestMotorcycleTaxCalculations2024(unittest.TestCase):
         """Test with another province as they vary between 36 and 37"""
         province = "gelderland"
         motor = Motorcycle(weight=0, energy_source=EnergySource.BENZINE)
-        result = 37
+        result = 38
 
         self.assertEqual(motor.calculate_total_tax(self.YEAR, province), result)
 

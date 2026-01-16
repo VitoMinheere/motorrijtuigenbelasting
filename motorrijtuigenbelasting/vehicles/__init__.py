@@ -81,8 +81,8 @@ class Vehicle(ABC):
                 return 0  # No tax for electric cars before 2025
             if self.calculation_year == 2025:
                 tax *= 0.25  # 25% of base tax
-            elif 2026 <= self.calculation_year <= 2029:
-                tax *= 0.75  # 75% of base tax
+            elif 2026 <= self.calculation_year <= 2028:
+                tax *= 0.70  # 70% of base tax
 
         return tax
 

@@ -46,6 +46,16 @@ class Motorcycle(Vehicle):
         province_rate = OPCENTEN[province][year] / 100
         return fixed_opcenten_base * province_rate
 
+    def apply_electric_tax_discount(self, tax: float) -> float:
+        if self.is_electric():
+            if self.calculation_year < 2025:
+                return 0  # No tax for electric cars before 2025
+            if self.calculation_year == 2025:
+                tax *= 0.25  # 25% of base tax
+            # Electric discount ends in 2025 for motorcycles
+
+        return tax
+
     def calculate_total_tax(self, year: int, province: str) -> int:
         """
         Calculates the total tax for the motorcycle, including the base tax
@@ -68,4 +78,4 @@ class Motorcycle(Vehicle):
         total_tax = self.apply_kwarttarief_discount(total_tax)
         total_tax = self.apply_historic_tax_discount(total_tax)
 
-        return int(total_tax)
+        return round(total_tax)

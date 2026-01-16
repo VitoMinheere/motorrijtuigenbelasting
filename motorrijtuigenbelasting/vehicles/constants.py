@@ -30,6 +30,7 @@ KWARTTARIEF_MAX = {
     2023: 138,
     2024: 152,
     2025: 154,
+    2026: 154,
 }
 
 # Define weight tax brackets per energy source
@@ -164,7 +165,7 @@ OPCENTEN = {
         2023: 82.2,
         2024: 83.0,
         2025: 83.9,
-        2026: 87.4,
+        2026: 84.7,
     },
     "gelderland": {
         2015: 89.3,

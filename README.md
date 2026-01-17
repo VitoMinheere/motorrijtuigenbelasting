@@ -1,54 +1,66 @@
-# Motorrijtuigenbelasting: Dutch Road Tax Calculator  
+# Motorrijtuigenbelasting: Dutch Road Tax Calculator
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)  
-![Python](https://img.shields.io/badge/Python-3.10%2B-brightgreen)  
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Python](https://img.shields.io/badge/Python-3.10%2B-brightgreen)
 
 Motorrijtuigenbelasting is a Python library designed to calculate Dutch road taxes (motorrijtuigenbelasting, MRB) for passenger cars, motorcycles, and other vehicle types. It provides tools for determining taxes based on weight, fuel type, and provincial rates between 2015 and 2024. Future years will be added once the inflation numbers are in from the Belastingdienst.
 
-## Features  
+## Motivation
 
-- Support for multiple energy sources (benzine, diesel, LPG, electric, etc.)  
-- Handles tax calculations based on weight brackets and provincial multipliers.  
-- Adjustable tax parameters for future tax years.  
-- Lightweight and extensible for different vehicle types like cars and motorcycles.  
+Every year the motorrijttuigenbelasting changes and it usually goes up. The Belastindienst has a tool on their site to check the tax for a certain vehicle weight and fuel but it does not show how they got to that number. I wanted 3 thins:
+- To be able to understand what is included in that tax
+- A way to quickly check multiple vehicles instead of going back and forth on
+  the Belastingdienst website
+- A way to track the changes in road tax over the years
+
+I did some research in how the tax is calculated and tried to find all the parameters to be able to calculate the taxes from 2015 up until the current year.
+
+
+
+## Features
+
+- Support for multiple energy sources (benzine, diesel, LPG, electric, etc.)
+- Handles tax calculations based on weight brackets and provincial multipliers.
+- Adjustable tax parameters for future tax years.
+- Lightweight and extensible for different vehicle types like cars and motorcycles.
 
 ---
 
-## Table of Contents  
+## Table of Contents
 
-1. [Installation](#installation)  
-2. [Usage](#usage)  
-   - [Example](#example)  
-3. [Supported Vehicle Types](#supported-vehicle-types)  
-4. [Contributing](#contributing)  
-5. [License](#license)  
+1. [Installation](#installation)
+2. [Usage](#usage)
+   - [Example](#example)
+3. [Supported Vehicle Types](#supported-vehicle-types)
+4. [Contributing](#contributing)
+5. [License](#license)
 
 ---
 
-## Installation  
+## Quick Start
 
-### Requirements  
-- Python 3.7 or higher.  
+### Requirements
+- Python 3.7 or higher.
 
 ```bash
 pip install motorrijtuigenbelasting
 ```
 
-or clone the repository and install dependencies:  
+or clone the repository and install dependencies:
 
 ```bash
-git clone https://github.com/VitoMinheere/motorrijtuigenbelasting.git  
+git clone https://github.com/VitoMinheere/motorrijtuigenbelasting.git
 cd motorrijtuigenbelasting
-pip install -r requirements.txt  
+pip install -r requirements.txt
 ```
 
 ---
 
-## Usage  
+## Usage
 
-### Example  
+### Example
 
-Here’s how to use MRB-Py to calculate road tax for a passenger car:  
+Here’s how to use MRB-Py to calculate road tax for a passenger car:
 
 ```python
 from motorrijtuigenbelasting import Car, EnergySource
@@ -66,10 +78,10 @@ print(f"Total tax for your car: €{tax}")
 
 ---
 
-## Supported Vehicle Types  
+## Supported Vehicle Types
 
-### Passenger Cars  
-Supports fuel types like benzine, diesel, LPG, LPG G3, and electric vehicles.  
+### Passenger Cars
+Supports fuel types like benzine, diesel, LPG, LPG G3, and electric vehicles.
 
 ### Oldtimer & kwarttarief ruling
 Added the oldtimer & kwarttarief rulings and their maximum amounts.
@@ -87,14 +99,14 @@ Other vehicles types are being worked on in the following order:
 
 ---
 
-## Contributing  
+## Contributing
 
-We welcome contributions! Please follow these steps:  
+We welcome contributions! Please follow these steps:
 
-1. Fork the repository.  
-2. Create a new branch for your feature or bugfix.  
-3. Write clear code and include tests.  
-4. Submit a pull request with a detailed description of your changes.  
+1. Fork the repository.
+2. Create a new branch for your feature or bugfix.
+3. Write clear code and include tests.
+4. Submit a pull request with a detailed description of your changes.
 
 ### Issues and Feature Requests
 
@@ -104,9 +116,9 @@ Found a bug or have an idea for a new feature? We’d love to hear from you!
     - Click New Issue.
     - Provide a detailed description, including steps to reproduce the issue or a clear explanation of your feature idea.
 
-### Running Tests  
+### Running Tests
 
-Use `unittest` to run tests:  
+Use `unittest` to run tests:
 
 ```bash
 python -m unittest discover -s tests
@@ -114,16 +126,16 @@ python -m unittest discover -s tests
 
 ---
 
-## License  
+## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.  
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
-## Contact  
+## Contact
 
-Feel free to reach out for support or feedback:  
+Feel free to reach out for support or feedback:
 - [VitoMinheere.com](https://vitominheere.com)
-- [GitHub Profile](https://github.com/VitoMinheere)  
-- [LinkedIn Profile](https://linkedin.com/in/vitominheere)  
+- [GitHub Profile](https://github.com/VitoMinheere)
+- [LinkedIn Profile](https://linkedin.com/in/vitominheere)
 

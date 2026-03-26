@@ -1,4 +1,6 @@
-from ..vehicles import Vehicle, EnergySource
+from datetime import date
+
+from ..vehicles import Vehicle, EnergySource, get_tax_value
 from .constants import INFLATION, WEIGHT_TAX_BRACKETS, EXCESS_RATES
 
 BENZINE_CUTOFF = 900
@@ -10,7 +12,7 @@ class Car(Vehicle):
         self,
         weight: int,
         energy_source: EnergySource,
-        manufacturing_year: int = None,
+        manufacturing_year: int = date.today().year,
         co2_emissions: bool = False,
         diesel_particles: bool = False,
     ):
@@ -35,8 +37,8 @@ class Car(Vehicle):
         Returns:
             float: The base tax for the given weight and energy source.
         """
-        tax_brackets = WEIGHT_TAX_BRACKETS[energy_source.value]
-        excess_rate = EXCESS_RATES[energy_source.value]
+        tax_brackets = get_tax_value(self.calculation_year, "weight_tax", energy_source.value) 
+        excess_rate = get_tax_value(self.calculation_year, "excess_rates", energy_source.value)
 
         # Apply excess rate for weights above the cutoff
         if self.rounded_weight >= cutoff:
@@ -44,11 +46,11 @@ class Car(Vehicle):
                 return 424.29 + (10.48 * (self.calculate_multiplier(cut_off=3300) - 1))
 
             multiplier = self.calculate_multiplier(cutoff)
-            base_rate = tax_brackets[-1][1]  # Use the last bracket's rate as the base
-            return base_rate + (multiplier * excess_rate)
+            base_rate = list(tax_brackets.items())[-1][1]  # Use the last bracket's rate as the base
+            return base_rate + int(multiplier * excess_rate)
 
-        for max_weight, rate in tax_brackets:
-            if self.rounded_weight <= max_weight:
+        for max_weight, rate in tax_brackets.items():
+            if self.rounded_weight <= int(max_weight):
                 return rate
 
         return 0.0
@@ -101,7 +103,8 @@ class Car(Vehicle):
 
         # Apply inflation adjustment if applicable
         if year in INFLATION:
-            base_tax = round(base_tax * (1 + INFLATION[year]), 2)
+            inflation = get_tax_value(self.calculation_year, "inflation", "value")
+            base_tax = round(base_tax * (1 + inflation), 2)
 
         # Provincial opcenten tax
         opcenten = round(self.calculate_opcenten(province, year), 2)

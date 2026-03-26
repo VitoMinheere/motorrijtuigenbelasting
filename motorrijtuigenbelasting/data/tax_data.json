@@ -1,0 +1,222 @@
+{
+    "2015": {
+        "weight_tax": {
+            "benzine": {
+                "500": 16.87,
+                "600": 22.87,
+                "700": 29.06,
+                "800": 37.94,
+                "900": 50.46
+            },
+            "lpg_g3": {
+                "500": 16.87,
+                "600": 22.87,
+                "700": 29.06,
+                "800": 37.94,
+                "900": 65.02
+            },
+            "diesel": {
+                "500": 64.32,
+                "600": 76.14,
+                "700": 87.93,
+                "800": 99.96,
+                "900": 116.98
+            },
+            "overige": {
+                "500": 75.46,
+                "600": 90.46,
+                "700": 105.45,
+                "800": 120.44,
+                "900": 131.55
+            }
+        },
+        "excess_rates": {
+            "benzine": 13.57,
+            "lpg_g3": 14.56,
+            "diesel": 12.68,
+            "overige": 13.94
+        },
+        "motorcycle": {"value": 23.85},
+        "kwarttarief": {"value": 120},
+        "inflation": {"value": 0.009},
+        "opcenten": {
+            "drenthe": 90.3,
+            "flevoland": 76.6,
+            "friesland": 94.1,
+            "gelderland": 89.3,
+            "groningen": 88.4,
+            "limburg": 77.9,
+            "noord-brabant": 76.1,
+            "noord-holland": 67.9,
+            "overijssel": 79.9,
+            "utrecht": 72.6,
+            "zeeland": 78.3,
+            "zuid-holland": 95.0
+        }
+    },
+    "2024": {
+        "weight_tax": {
+            "benzine": {
+                "500": 20.61,
+                "600": 27.96,
+                "700": 35.53,
+                "800": 46.38,
+                "900": 61.69
+            },
+            "lpg_g3": {
+                "500": 20.61,
+                "600": 27.96,
+                "700": 35.53,
+                "800": 46.38,
+                "900": 79.98
+            },
+            "diesel": {
+                "500": 80.80,
+                "600": 95.63,
+                "700": 110.46,
+                "800": 125.56,
+                "900": 146.93
+            },
+            "overige": {
+                "500": 94.79,
+                "600": 113.63,
+                "700": 132.47,
+                "800": 151.28,
+                "900": 165.25
+            }
+        },
+        "excess_rates": {
+            "benzine": 16.58,
+            "lpg_g3": 18.29,
+            "diesel": 15.91,
+            "overige": 17.50
+        },
+        "motorcycle": {"value": 29.96},
+        "kwarttarief": {"value": 152},
+        "inflation": {"value": 0.099},
+        "opcenten": {
+            "drenthe": 92.0,
+            "flevoland": 83.0,
+            "friesland": 89.6,
+            "gelderland": 97.9,
+            "groningen": 95.7,
+            "limburg": 83.1,
+            "noord-brabant": 82.8,
+            "noord-holland": 77.4,
+            "overijssel": 82.2,
+            "utrecht": 81.9,
+            "zeeland": 84.4,
+            "zuid-holland": 98.7
+        }
+    },
+    "2025": {
+        "weight_tax": {
+            "benzine": {
+                "500": 20.86,
+                "600": 28.30,
+                "700": 35.96,
+                "800": 46.94,
+                "900": 62.43
+            },
+            "lpg_g3": {
+                "500": 20.86,
+                "600": 28.30,
+                "700": 35.96,
+                "800": 46.94,
+                "900": 80.94
+            },
+            "diesel": {
+                "500": 81.77,
+                "600": 96.78,
+                "700": 111.79,
+                "800": 127.07,
+                "900": 148.69
+            },
+            "overige": {
+                "500": 95.93,
+                "600": 114.99,
+                "700": 134.06,
+                "800": 153.10,
+                "900": 167.23
+            }
+        },
+        "excess_rates": {
+            "benzine": 16.78,
+            "lpg_g3": 18.51,
+            "diesel": 16.10,
+            "overige": 17.71
+        },
+        "motorcycle": {"value": 30.32},
+        "kwarttarief": {"value": 154},
+        "inflation": {"value": 0.1122},
+        "opcenten": {
+            "drenthe": 92.0,
+            "flevoland": 83.9,
+            "friesland": 92.1,
+            "gelderland": 101.2,
+            "groningen": 95.7,
+            "limburg": 88.5,
+            "noord-brabant": 84.9,
+            "noord-holland": 77.4,
+            "overijssel": 82.2,
+            "utrecht": 84.2,
+            "zeeland": 84.4,
+            "zuid-holland": 101.5
+        }
+    },
+    "2026": {
+        "weight_tax": {
+            "benzine": {
+                "500": 21.46,
+                "600": 29.12,
+                "700": 37.00,
+                "800": 48.30,
+                "900": 64.24
+            },
+            "lpg_g3": {
+                "500": 21.46,
+                "600": 29.12,
+                "700": 37.00,
+                "800": 48.30,
+                "900": 83.29
+            },
+            "diesel": {
+                "500": 84.14,
+                "600": 99.59,
+                "700": 115.03,
+                "800": 130.76,
+                "900": 153.00
+            },
+            "overige": {
+                "500": 98.71,
+                "600": 118.32,
+                "700": 115.03,
+                "800": 130.76,
+                "900": 172.08
+            }
+        },
+        "excess_rates": {
+            "benzine": 17.27,
+            "lpg_g3": 19.05,
+            "diesel": 16.57,
+            "overige": 18.22
+        },
+        "motorcycle": {"value": 31.20},
+        "kwarttarief": {"value": 158},
+        "inflation": {"value": 0.029},
+        "opcenten": {
+            "drenthe": 92.0,
+            "flevoland": 84.7,
+            "friesland": 92.1,
+            "gelderland": 98.3,
+            "groningen": 95.7,
+            "limburg": 88.5,
+            "noord-brabant": 87.0,
+            "noord-holland": 82.1,
+            "overijssel": 82.2,
+            "utrecht": 86.4,
+            "zeeland": 84.4,
+            "zuid-holland": 104.4
+        }
+    }
+}

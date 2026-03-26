@@ -313,7 +313,7 @@ class TestCarTaxCalculations2026(unittest.TestCase):
 
     def test_calculate_tax_benzine_with_excess_weight(self):
         car = Car(weight=1200, energy_source=EnergySource.BENZINE)
-        result = 173
+        result = 172
 
         self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
 

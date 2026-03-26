@@ -1,4 +1,4 @@
-from ..vehicles import Vehicle
+from ..vehicles import Vehicle, get_tax_value
 from .constants import OPCENTEN
 
 
@@ -27,7 +27,7 @@ class Motorcycle(Vehicle):
         Returns:
             float: The fixed base tax amount.
         """
-        return 29.96
+        return get_tax_value(self.calculation_year, "motorcycle", "value")
 
     def calculate_opcenten(self, province: str, year: int) -> float:
         """
@@ -43,7 +43,8 @@ class Motorcycle(Vehicle):
             float: The calculated opcenten tax amount.
         """
         fixed_opcenten_base = 7.80
-        province_rate = OPCENTEN[province][year] / 100
+        opcenten = get_tax_value(year, "opcenten", province)
+        province_rate = opcenten / 100
         return fixed_opcenten_base * province_rate
 
     def apply_electric_tax_discount(self, tax: float) -> float:
@@ -78,4 +79,4 @@ class Motorcycle(Vehicle):
         total_tax = self.apply_kwarttarief_discount(total_tax)
         total_tax = self.apply_historic_tax_discount(total_tax)
 
-        return round(total_tax)
+        return int(total_tax)

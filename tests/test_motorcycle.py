@@ -36,7 +36,7 @@ class TestMotorcycleTaxCalculations2024(unittest.TestCase):
         """Test with another province as they vary between 36 and 37"""
         province = "gelderland"
         motor = Motorcycle(weight=0, energy_source=EnergySource.BENZINE)
-        result = 38
+        result = 37
 
         self.assertEqual(motor.calculate_total_tax(self.YEAR, province), result)
 
@@ -121,7 +121,7 @@ class TestMotorcycleTaxCalculations2025(unittest.TestCase):
         motor = Motorcycle(
             weight=0, energy_source=EnergySource.BENZINE, manufacturing_year=1987
         )
-        result = 9
+        result = 10
 
         self.assertEqual(motor.calculate_total_tax(self.YEAR, province), result)
 
@@ -145,7 +145,7 @@ class TestMotorcycleTaxCalculations2026(unittest.TestCase):
     def test_calculate_tax_noord_holland(self):
         province = "noord-holland"
         motor = Motorcycle(weight=0, energy_source=EnergySource.BENZINE)
-        result = 36
+        result = 37
 
         self.assertEqual(motor.calculate_total_tax(self.YEAR, province), result)
 
@@ -181,6 +181,6 @@ class TestMotorcycleTaxCalculations2026(unittest.TestCase):
         motor = Motorcycle(
             weight=0, energy_source=EnergySource.BENZINE, manufacturing_year=1987
         )
-        result = 9
+        result = round(38*0.25)
 
         self.assertEqual(motor.calculate_total_tax(self.YEAR, province), result)

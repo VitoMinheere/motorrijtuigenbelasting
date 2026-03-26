@@ -2,9 +2,15 @@ from abc import ABC, abstractmethod
 from enum import Enum
 
 import datetime
+import json
 
 from .constants import OPCENTEN, OPCENTEN_BRACKETS, EXCESS_RATES, KWARTTARIEF_MAX
 
+with open("motorrijtuigenbelasting/data/tax_data.json", "r") as f:
+    TAX_DATA = json.load(f)
+
+def get_tax_value(year: int, category: str, key: str):
+    return TAX_DATA[str(year)][category][key]
 
 class EnergySource(Enum):
     BENZINE = "benzine"
@@ -31,12 +37,12 @@ class Vehicle(ABC):
     """
 
     def __init__(
-        self, weight: int, energy_source: EnergySource, manufacturing_year: int = None
+        self, weight: int, energy_source: EnergySource, manufacturing_year: int = datetime.date.today().year
     ):
         self.rounded_weight = 100 * int(weight / 100)
         self.energy_source = energy_source
         self.manufacturing_year = manufacturing_year
-        self.calculation_year = None
+        self.calculation_year = datetime.date.today().year
 
     def set_calculation_year(self, year: int):
         self.calculation_year = year
@@ -44,12 +50,12 @@ class Vehicle(ABC):
     @abstractmethod
     def calculate_base_tax(self) -> float:
         """Abstract method to calculate base tax."""
-        return
+        pass
 
     @abstractmethod
     def calculate_total_tax(self, year: int, province: str) -> float:
         """Abstract method to calculate the total tax, optionally using province."""
-        return
+        pass
 
     def is_historic(self) -> bool:
         """Oldtimer ruling applies when vehicle is registered 40 years ago"""
@@ -69,7 +75,7 @@ class Vehicle(ABC):
 
     def apply_kwarttarief_discount(self, tax: float) -> float:
         if self.is_kwarttarief() and self.energy_source == EnergySource.BENZINE:
-            return min(tax * 0.25, KWARTTARIEF_MAX[self.calculation_year])
+            return min(tax * 0.25, get_tax_value(self.calculation_year, "kwarttarief", "value"))
         return tax
 
     def is_electric(self) -> bool:
@@ -126,6 +132,7 @@ class Vehicle(ABC):
         excess_rate = EXCESS_RATES["opcenten"]
         cutoff = 900
         base_rate = 0
+        opcenten = get_tax_value(year, "opcenten", province)
 
         # Apply excess rate for weights above the cutoff
         if self.rounded_weight >= cutoff:
@@ -138,4 +145,4 @@ class Vehicle(ABC):
                     base_rate = rate
                     break
 
-        return base_rate * (OPCENTEN[province][year] / 100)
+        return base_rate * (opcenten / 100)

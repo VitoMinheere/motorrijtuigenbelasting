@@ -63,6 +63,13 @@
                 "800": 46.38,
                 "900": 61.69
             },
+            "elektriciteit": {
+                "500": 20.61,
+                "600": 27.96,
+                "700": 35.53,
+                "800": 46.38,
+                "900": 61.69
+            },
             "lpg_g3": {
                 "500": 20.61,
                 "600": 27.96,
@@ -87,13 +94,14 @@
         },
         "excess_rates": {
             "benzine": 16.58,
+            "elektriciteit": 16.58,
             "lpg_g3": 18.29,
             "diesel": 15.91,
             "overige": 17.50
         },
         "motorcycle": {"value": 29.96},
         "kwarttarief": {"value": 152},
-        "inflation": {"value": 0.099},
+        "inflation": {"value": 0.0},
         "opcenten": {
             "drenthe": 92.0,
             "flevoland": 83.0,
@@ -112,6 +120,13 @@
     "2025": {
         "weight_tax": {
             "benzine": {
+                "500": 20.86,
+                "600": 28.30,
+                "700": 35.96,
+                "800": 46.94,
+                "900": 62.43
+            },
+            "elektriciteit": {
                 "500": 20.86,
                 "600": 28.30,
                 "700": 35.96,
@@ -142,13 +157,14 @@
         },
         "excess_rates": {
             "benzine": 16.78,
+            "elektriciteit": 16.78,
             "lpg_g3": 18.51,
             "diesel": 16.10,
             "overige": 17.71
         },
         "motorcycle": {"value": 30.32},
         "kwarttarief": {"value": 154},
-        "inflation": {"value": 0.1122},
+        "inflation": {"value": 0.0},
         "opcenten": {
             "drenthe": 92.0,
             "flevoland": 83.9,
@@ -173,6 +189,13 @@
                 "800": 48.30,
                 "900": 64.24
             },
+            "elektriciteit": {
+                "500": 21.46,
+                "600": 29.12,
+                "700": 37.00,
+                "800": 48.30,
+                "900": 64.24
+            },
             "lpg_g3": {
                 "500": 21.46,
                 "600": 29.12,
@@ -190,8 +213,8 @@
             "overige": {
                 "500": 98.71,
                 "600": 118.32,
-                "700": 115.03,
-                "800": 130.76,
+                "700": 137.95,
+                "800": 157.54,
                 "900": 172.08
             }
         },
@@ -203,7 +226,7 @@
         },
         "motorcycle": {"value": 31.20},
         "kwarttarief": {"value": 158},
-        "inflation": {"value": 0.029},
+        "inflation": {"value": 0.0},
         "opcenten": {
             "drenthe": 92.0,
             "flevoland": 84.7,

@@ -22,7 +22,6 @@ class Car(Vehicle):
 
     def calculate_base_tax(
         self,
-        energy_source: EnergySource = EnergySource.BENZINE,
         cutoff: int = BENZINE_CUTOFF,
     ) -> float:
         """
@@ -37,8 +36,8 @@ class Car(Vehicle):
         Returns:
             float: The base tax for the given weight and energy source.
         """
-        tax_brackets = get_tax_value(self.calculation_year, "weight_tax", energy_source.value) 
-        excess_rate = get_tax_value(self.calculation_year, "excess_rates", energy_source.value)
+        tax_brackets = get_tax_value(self.calculation_year, "weight_tax", self.energy_source.value) 
+        excess_rate = get_tax_value(self.calculation_year, "excess_rates", self.energy_source.value)
 
         # Apply excess rate for weights above the cutoff
         if self.rounded_weight >= cutoff:
@@ -67,18 +66,18 @@ class Car(Vehicle):
             # Fijnstoftoeslag
             return (
                 1.19
-                * (base_tax + self.calculate_base_tax(energy_source=self.energy_source))
+                * (base_tax + self.calculate_base_tax())
                 - base_tax
             )
 
-        if self.energy_source not in [
-            EnergySource.BENZINE,
-            EnergySource.ELEKTRICITEIT,
-        ]:
-            return self.calculate_base_tax(energy_source=self.energy_source)
+        # if self.energy_source not in [
+        #     EnergySource.BENZINE,
+        #     EnergySource.ELEKTRICITEIT,
+        # ]:
+        #     return self.calculate_base_tax()
 
-        # elif self.energy_source in [EnergySource.LPG, EnergySource.OVERIGE]:
-        #     return self.calculate_base_tax(energy_source="overige")
+        # # elif self.energy_source in [EnergySource.LPG, EnergySource.OVERIGE]:
+        # #     return self.calculate_base_tax(energy_source="overige")
         return 0.0
 
     def calculate_total_tax(self, year: int, province: str) -> float:

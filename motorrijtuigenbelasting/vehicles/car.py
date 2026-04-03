@@ -41,8 +41,9 @@ class Car(Vehicle):
 
         # Apply excess rate for weights above the cutoff
         if self.rounded_weight >= cutoff:
-            base_rate = list(tax_brackets.items())[-1][1]  # Use the last bracket's rate as the base
+            base_rate = tax_brackets[str(cutoff)]
             if self.rounded_weight >= 3300:
+                base_rate = list(tax_brackets.items())[-1][1]  # Use the last bracket's rate as the base
                 excess_rate = get_tax_value(self.calculation_year, "excess_rates_>3300", self.energy_source.value)
                 return base_rate + (excess_rate * (self.calculate_multiplier(cut_off=3300)))
 

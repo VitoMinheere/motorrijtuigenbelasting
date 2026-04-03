@@ -4,7 +4,7 @@ from ..vehicles import Vehicle, EnergySource, get_tax_value
 from .constants import INFLATION, WEIGHT_TAX_BRACKETS, EXCESS_RATES
 
 BENZINE_CUTOFF = 900
-LPG_CUTOFF = 800
+LPG_CUTOFF = 900
 
 
 class Car(Vehicle):
@@ -37,15 +37,18 @@ class Car(Vehicle):
             float: The base tax for the given weight and energy source.
         """
         tax_brackets = get_tax_value(self.calculation_year, "weight_tax", self.energy_source.value) 
-        excess_rate = get_tax_value(self.calculation_year, "excess_rates", self.energy_source.value)
+        excess_rate = get_tax_value(self.calculation_year, "excess_rates_<3300", self.energy_source.value)
 
         # Apply excess rate for weights above the cutoff
         if self.rounded_weight >= cutoff:
+            base_rate = list(tax_brackets.items())[-1][1]  # Use the last bracket's rate as the base
             if self.rounded_weight >= 3300:
-                return 424.29 + (10.48 * (self.calculate_multiplier(cut_off=3300) - 1))
+                excess_rate = get_tax_value(self.calculation_year, "excess_rates_>3300", self.energy_source.value)
+                return base_rate + (excess_rate * (self.calculate_multiplier(cut_off=3300)))
 
             multiplier = self.calculate_multiplier(cutoff)
-            base_rate = list(tax_brackets.items())[-1][1]  # Use the last bracket's rate as the base
+            if self.energy_source == EnergySource.LPG_G3:
+                multiplier += 1  # LPG has a different cutoff, so we need to add 1 to the multiplier
             return base_rate + int(multiplier * excess_rate)
 
         for max_weight, rate in tax_brackets.items():
@@ -56,11 +59,12 @@ class Car(Vehicle):
 
     def calculate_fuel_tax(self, base_tax: float) -> float:
         """Calculate extra fuel tax based on energy source."""
-        if (
-            self.energy_source == EnergySource.LPG_G3
-            and self.rounded_weight > LPG_CUTOFF
-        ):
-            return 16.64 * self.calculate_multiplier(cut_off=LPG_CUTOFF)
+        # if (
+        #     self.energy_source == EnergySource.LPG_G3
+        #     and self.rounded_weight > LPG_CUTOFF
+        # ):
+        #     excess_rate = get_tax_value(self.calculation_year, "excess_rates_<3300", self.energy_source.value)
+        #     return excess_rate * self.calculate_multiplier(cut_off=LPG_CUTOFF)
 
         if self.energy_source == EnergySource.DIESEL and self.diesel_particles:
             # Fijnstoftoeslag

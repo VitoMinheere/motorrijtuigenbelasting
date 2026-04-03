@@ -201,7 +201,7 @@
                 "600": 29.12,
                 "700": 37.00,
                 "800": 48.30,
-                "900": 83.29
+                "900": 64.24
             },
             "diesel": {
                 "500": 84.14,
@@ -218,8 +218,16 @@
                 "900": 172.08
             }
         },
-        "excess_rates": {
+        "excess_rates_<3300": {
             "benzine": 17.27,
+            "elektriciteit": 17.27,
+            "lpg_g3": 19.05,
+            "diesel": 16.57,
+            "overige": 18.22
+        },
+        "excess_rates_>3300": {
+            "benzine": 12.00,
+            "elektriciteit": 12.00,
             "lpg_g3": 19.05,
             "diesel": 16.57,
             "overige": 18.22

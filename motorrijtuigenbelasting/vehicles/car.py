@@ -60,29 +60,10 @@ class Car(Vehicle):
 
     def calculate_fuel_tax(self, base_tax: float) -> float:
         """Calculate extra fuel tax based on energy source."""
-        # if (
-        #     self.energy_source == EnergySource.LPG_G3
-        #     and self.rounded_weight > LPG_CUTOFF
-        # ):
-        #     excess_rate = get_tax_value(self.calculation_year, "excess_rates_<3300", self.energy_source.value)
-        #     return excess_rate * self.calculate_multiplier(cut_off=LPG_CUTOFF)
-
         if self.energy_source == EnergySource.DIESEL and self.diesel_particles:
             # Fijnstoftoeslag
-            return (
-                1.19
-                * (base_tax + self.calculate_base_tax())
-                - base_tax
-            )
+            return (0.19 * base_tax)
 
-        # if self.energy_source not in [
-        #     EnergySource.BENZINE,
-        #     EnergySource.ELEKTRICITEIT,
-        # ]:
-        #     return self.calculate_base_tax()
-
-        # # elif self.energy_source in [EnergySource.LPG, EnergySource.OVERIGE]:
-        # #     return self.calculate_base_tax(energy_source="overige")
         return 0.0
 
     def calculate_total_tax(self, year: int, province: str) -> float:

@@ -11,7 +11,8 @@
             "low_emission_factor": 0.0
         },
         "motorcycle": {
-            "value": 23.85
+            "value": 23.85,
+            "zero_emission_factor": 0.0
         },
         "kwarttarief": {
             "value": 121
@@ -43,7 +44,8 @@
             "low_emission_factor": 0.5
         },
         "motorcycle": {
-            "value": 27.26
+            "value": 27.26,
+            "zero_emission_factor": 0.0
         },
         "kwarttarief": {
             "value": 138
@@ -75,7 +77,8 @@
             "low_emission_factor": 0.5
         },
         "motorcycle": {
-            "value": 29.96
+            "value": 29.96,
+            "zero_emission_factor": 0.0
         },
         "kwarttarief": {
             "value": 152
@@ -107,7 +110,8 @@
             "low_emission_factor": 0.75
         },
         "motorcycle": {
-            "value": 30.32
+            "value": 30.32,
+            "zero_emission_factor": 0.25
         },
         "kwarttarief": {
             "value": 154
@@ -139,7 +143,8 @@
             "low_emission_factor": 1.0
         },
         "motorcycle": {
-            "value": 31.2
+            "value": 31.2,
+            "zero_emission_factor": 1.0
         },
         "kwarttarief": {
             "value": 158

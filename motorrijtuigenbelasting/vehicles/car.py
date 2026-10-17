@@ -1,7 +1,16 @@
-from datetime import date
-
-from ..vehicles import EnergySource, Vehicle, get_tax_value
+from ..tax_data import get_tax_value, rate_for_weight
+from .base import Vehicle
 from .constants import FIJNSTOFTOESLAG, MASSA_RIJKLAAR_OFFSET, OPCENTEN_BASE
+from .energy_source import EnergySource
+
+# Brandstoftoeslag table per energy source (art. 23 lid 2 and 3). Benzine and electric
+# cars pay none, LPG pays the same as other fuels unless it has a G3 installation.
+FUEL_SURCHARGE_TABLE = {
+    EnergySource.DIESEL: "diesel",
+    EnergySource.LPG: "overige",
+    EnergySource.LPG_G3: "lpg_g3",
+    EnergySource.OVERIGE: "overige",
+}
 
 
 class Car(Vehicle):
@@ -16,11 +25,13 @@ class Car(Vehicle):
         diesel_particles (bool, optional): Particle emission above the Euro 5 limit.
     """
 
+    TAX_CATEGORY = "car"
+
     def __init__(
         self,
         weight: int,
         energy_source: EnergySource,
-        manufacturing_year: int = date.today().year,
+        manufacturing_year: int | None = None,
         co2_emissions: bool = False,
         diesel_particles: bool = False,
     ):
@@ -45,27 +56,29 @@ class Car(Vehicle):
 
     def calculate_fuel_surcharge(self, year: int) -> float:
         """Brandstoftoeslag (art. 23 lid 2 and 3). Benzine and electric cars pay none."""
-        surcharges = get_tax_value(year, "car", "fuel_surcharge")
-        if self.energy_source.value not in surcharges:
+        table = FUEL_SURCHARGE_TABLE.get(self.energy_source)
+        if table is None:
             return 0.0
-        return self.rate_for_weight(surcharges[self.energy_source.value])
+        return self.rate_for_weight(get_tax_value(year, "car", "fuel_surcharge")[table])
 
-    def calculate_opcenten(self, province: str, year: int) -> float:
+    def opcenten_base(self) -> float:
         """
-        Provincial opcenten over the 1995 tariff. The brandstoftoeslag is left out.
+        Opcenten are levied over the 1995 tariff. The brandstoftoeslag is left out.
         Source: Provinciewet art. 222 lid 3
         """
-        opcenten = get_tax_value(year, "opcenten", province)
-        return self.rate_for_weight(OPCENTEN_BASE) * opcenten / 100
+        return self.rate_for_weight(OPCENTEN_BASE)
 
     def emission_factor(self, year: int) -> float:
         """Zero and low emission discount (art. 23b), applies to the opcenten as well."""
-        if self.is_electric():
-            return get_tax_value(year, "car", "zero_emission_factor")
-        if self.low_co2_emissions:
+        if not self.is_electric() and self.low_co2_emissions:
             return get_tax_value(year, "car", "low_emission_factor")
-        return 1.0
+        return super().emission_factor(year)
 
-    def is_kwarttarief(self) -> bool:
+    def is_kwarttarief(self, year: int) -> bool:
         """Only benzine cars can use the kwarttarief (art. 84a lid 3b)"""
-        return self.energy_source == EnergySource.BENZINE and super().is_kwarttarief()
+        return self.energy_source == EnergySource.BENZINE and super().is_kwarttarief(
+            year
+        )
+
+    def rate_for_weight(self, table: dict) -> float:
+        return rate_for_weight(table, self.rounded_weight)

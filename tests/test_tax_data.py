@@ -7,6 +7,15 @@ from motorrijtuigenbelasting.tax_data import PER_100KG_PREFIX, TAX_DATA
 # Tabelcorrectiefactor: the yearly indexation of all amounts in the law, from the
 # "Belangrijkste wijzigingen belastingen <year>" overview of the Rijksoverheid.
 TABELCORRECTIEFACTOR = {
+    2015: 0.009,
+    2016: 0.005,
+    2017: 0.003,
+    2018: 0.008,
+    2019: 0.012,
+    2020: 0.016,
+    2021: 0.016,
+    2022: 0.013,
+    2023: 0.063,
     2024: 0.099,
     2025: 0.012,
     2026: 0.029,
@@ -26,6 +35,12 @@ PROVINCES = {
     "zeeland",
     "zuid-holland",
 }
+# Tables that changed by more than the tabelcorrectiefactor because the law changed.
+# In 2017 the base tariff for personenauto's went down, the surcharges did not.
+OTHER_CHANGES = {
+    (2017, "base"): -0.024,
+}
+
 FUEL_SURCHARGES = {"diesel", "overige", "lpg_g3"}
 # Rates are stated in cents, so a ratio between two years can be off by rounding
 RATIO_TOLERANCE = 0.002
@@ -107,9 +122,10 @@ class TestTabelcorrectiefactor(unittest.TestCase):
             previous, current = TAX_DATA[str(year - 1)], TAX_DATA[str(year)]
             for name, table in weight_tables(current).items():
                 previous_table = weight_tables(previous)[name]
+                table_factor = OTHER_CHANGES.get((year, name), factor)
                 for key, value in table.items():
                     with self.subTest(year=year, table=name, weight=key):
-                        self.assert_indexed(previous_table[key], value, factor)
+                        self.assert_indexed(previous_table[key], value, table_factor)
             with self.subTest(year=year, table="motorcycle"):
                 self.assert_indexed(
                     previous["motorcycle"]["value"],

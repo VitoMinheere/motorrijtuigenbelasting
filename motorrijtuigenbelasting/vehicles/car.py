@@ -3,8 +3,8 @@ from .base import Vehicle
 from .constants import MASSA_RIJKLAAR_OFFSET, OPCENTEN_BASE
 from .energy_source import EnergySource
 
-# Brandstoftoeslag table per energy source (art. 23 lid 2 and 3). Benzine and electric
-# cars pay none, LPG pays the same as other fuels unless it has a G3 installation.
+# Brandstoftoeslag table per energy source (art. 23 lid 2 and 3). Benzine, electric and
+# hydrogen cars pay none, LPG pays the same as other fuels unless it has a G3 installation.
 FUEL_SURCHARGE_TABLE = {
     EnergySource.DIESEL: "diesel",
     EnergySource.LPG: "overige",
@@ -56,7 +56,7 @@ class Car(Vehicle):
         return tax
 
     def calculate_fuel_surcharge(self, year: int) -> float:
-        """Brandstoftoeslag (art. 23 lid 2 and 3). Benzine and electric cars pay none."""
+        """Brandstoftoeslag (art. 23 lid 2 and 3). Benzine, electric and hydrogen cars pay none."""
         table = FUEL_SURCHARGE_TABLE.get(self.energy_source)
         if table is None:
             return 0.0
@@ -71,7 +71,7 @@ class Car(Vehicle):
 
     def emission_factor(self, year: int) -> float:
         """Zero and low emission discount (art. 23b), applies to the opcenten as well."""
-        if not self.is_electric() and self.low_co2_emissions:
+        if not self.is_zero_emission() and self.low_co2_emissions:
             return get_tax_value(year, "car", "low_emission_factor")
         return super().emission_factor(year)
 

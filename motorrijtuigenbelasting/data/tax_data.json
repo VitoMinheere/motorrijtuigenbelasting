@@ -1,4 +1,38 @@
 {
+    "2014": {
+        "car": {
+            "base": {"500": 16.72, "600": 22.67, "700": 28.8, "800": 37.6, "900": 50.01, "per_100kg_above_900": 13.45, "3300": 369.22, "per_100kg_above_3300": 9.35},
+            "fuel_surcharge": {
+                "diesel": {"500": 63.75, "600": 75.46, "700": 87.15, "800": 99.07, "900": 115.94, "per_100kg_above_900": 12.57},
+                "overige": {"500": 74.79, "600": 89.65, "700": 104.51, "800": 119.37, "900": 130.38, "per_100kg_above_900": 13.82},
+                "lpg_g3": {"500": 0, "600": 0, "700": 0, "800": 0, "900": 14.43, "per_100kg_above_900": 14.43}
+            },
+            "zero_emission_factor": 0.0,
+            "low_emission_factor": 0.0,
+            "fijnstoftoeslag": 0.0
+        },
+        "motorcycle": {
+            "value": 23.64,
+            "zero_emission_factor": 0.0
+        },
+        "kwarttarief": {
+            "value": 120
+        },
+        "opcenten": {
+            "drenthe": 88.3,
+            "flevoland": 76.6,
+            "friesland": 90.3,
+            "gelderland": 87.1,
+            "groningen": 87.1,
+            "limburg": 76.6,
+            "noord-brabant": 75.8,
+            "noord-holland": 67.9,
+            "overijssel": 79.9,
+            "utrecht": 72.6,
+            "zeeland": 78.3,
+            "zuid-holland": 95.0
+        }
+    },
     "2015": {
         "car": {
             "base": {"500": 16.87, "600": 22.87, "700": 29.06, "800": 37.94, "900": 50.46, "per_100kg_above_900": 13.57, "3300": 372.54, "per_100kg_above_3300": 9.43},
@@ -31,6 +65,244 @@
             "utrecht": 72.6,
             "zeeland": 78.3,
             "zuid-holland": 95.0
+        }
+    },
+    "2016": {
+        "car": {
+            "base": {"500": 16.95, "600": 22.98, "700": 29.21, "800": 38.13, "900": 50.71, "per_100kg_above_900": 13.64, "3300": 374.4, "per_100kg_above_3300": 9.48},
+            "fuel_surcharge": {
+                "diesel": {"500": 64.64, "600": 76.52, "700": 88.37, "800": 100.46, "900": 117.56, "per_100kg_above_900": 12.74},
+                "overige": {"500": 75.84, "600": 90.91, "700": 105.98, "800": 121.04, "900": 132.21, "per_100kg_above_900": 14.01},
+                "lpg_g3": {"500": 0, "600": 0, "700": 0, "800": 0, "900": 14.63, "per_100kg_above_900": 14.63}
+            },
+            "zero_emission_factor": 0.0,
+            "low_emission_factor": 0.5,
+            "fijnstoftoeslag": 0.0
+        },
+        "motorcycle": {
+            "value": 23.97,
+            "zero_emission_factor": 0.0
+        },
+        "kwarttarief": {
+            "value": 122
+        },
+        "opcenten": {
+            "drenthe": 92.0,
+            "flevoland": 77.4,
+            "friesland": 68.8,
+            "gelderland": 88.7,
+            "groningen": 88.9,
+            "limburg": 77.9,
+            "noord-brabant": 76.1,
+            "noord-holland": 67.9,
+            "overijssel": 79.9,
+            "utrecht": 72.6,
+            "zeeland": 82.3,
+            "zuid-holland": 92.0
+        }
+    },
+    "2017": {
+        "car": {
+            "base": {"500": 16.54, "600": 22.43, "700": 28.51, "800": 37.21, "900": 49.49, "per_100kg_above_900": 13.31, "3300": 365.38, "per_100kg_above_3300": 9.25},
+            "fuel_surcharge": {
+                "diesel": {"500": 64.83, "600": 76.75, "700": 88.64, "800": 100.76, "900": 117.91, "per_100kg_above_900": 12.78},
+                "overige": {"500": 76.07, "600": 91.18, "700": 106.3, "800": 121.4, "900": 132.61, "per_100kg_above_900": 14.05},
+                "lpg_g3": {"500": 0, "600": 0, "700": 0, "800": 0, "900": 14.67, "per_100kg_above_900": 14.67}
+            },
+            "zero_emission_factor": 0.0,
+            "low_emission_factor": 0.5,
+            "fijnstoftoeslag": 0.0
+        },
+        "motorcycle": {
+            "value": 24.04,
+            "zero_emission_factor": 0.0
+        },
+        "kwarttarief": {
+            "value": 122
+        },
+        "opcenten": {
+            "drenthe": 92.0,
+            "flevoland": 78.2,
+            "friesland": 69.4,
+            "gelderland": 89.2,
+            "groningen": 88.6,
+            "limburg": 77.9,
+            "noord-brabant": 76.1,
+            "noord-holland": 67.9,
+            "overijssel": 79.9,
+            "utrecht": 72.6,
+            "zeeland": 82.3,
+            "zuid-holland": 91.4
+        }
+    },
+    "2018": {
+        "car": {
+            "base": {"500": 16.67, "600": 22.61, "700": 28.74, "800": 37.51, "900": 49.89, "per_100kg_above_900": 13.42, "3300": 368.3, "per_100kg_above_3300": 9.32},
+            "fuel_surcharge": {
+                "diesel": {"500": 65.35, "600": 77.36, "700": 89.35, "800": 101.57, "900": 118.85, "per_100kg_above_900": 12.88},
+                "overige": {"500": 76.68, "600": 91.91, "700": 107.15, "800": 122.37, "900": 133.67, "per_100kg_above_900": 14.16},
+                "lpg_g3": {"500": 0, "600": 0, "700": 0, "800": 0, "900": 14.79, "per_100kg_above_900": 14.79}
+            },
+            "zero_emission_factor": 0.0,
+            "low_emission_factor": 0.5,
+            "fijnstoftoeslag": 0.0
+        },
+        "motorcycle": {
+            "value": 24.23,
+            "zero_emission_factor": 0.0
+        },
+        "kwarttarief": {
+            "value": 123.04
+        },
+        "opcenten": {
+            "drenthe": 92.0,
+            "flevoland": 79.0,
+            "friesland": 70.0,
+            "gelderland": 89.2,
+            "groningen": 89.3,
+            "limburg": 77.9,
+            "noord-brabant": 76.1,
+            "noord-holland": 67.9,
+            "overijssel": 79.9,
+            "utrecht": 72.6,
+            "zeeland": 82.3,
+            "zuid-holland": 90.4
+        }
+    },
+    "2019": {
+        "car": {
+            "base": {"500": 16.87, "600": 22.88, "700": 29.08, "800": 37.96, "900": 50.49, "per_100kg_above_900": 13.58, "3300": 372.72, "per_100kg_above_3300": 9.43},
+            "fuel_surcharge": {
+                "diesel": {"500": 66.13, "600": 78.29, "700": 90.42, "800": 102.79, "900": 120.28, "per_100kg_above_900": 13.03},
+                "overige": {"500": 77.6, "600": 93.01, "700": 108.44, "800": 123.84, "900": 135.27, "per_100kg_above_900": 14.33},
+                "lpg_g3": {"500": 0, "600": 0, "700": 0, "800": 0, "900": 14.97, "per_100kg_above_900": 14.97}
+            },
+            "zero_emission_factor": 0.0,
+            "low_emission_factor": 0.5,
+            "fijnstoftoeslag": 0.0
+        },
+        "motorcycle": {
+            "value": 24.52,
+            "zero_emission_factor": 0.0
+        },
+        "kwarttarief": {
+            "value": 125
+        },
+        "opcenten": {
+            "drenthe": 92.0,
+            "flevoland": 79.8,
+            "friesland": 71.1,
+            "gelderland": 89.2,
+            "groningen": 90.4,
+            "limburg": 77.9,
+            "noord-brabant": 76.1,
+            "noord-holland": 67.9,
+            "overijssel": 79.9,
+            "utrecht": 72.6,
+            "zeeland": 89.1,
+            "zuid-holland": 90.4
+        }
+    },
+    "2020": {
+        "car": {
+            "base": {"500": 17.14, "600": 23.25, "700": 29.55, "800": 38.57, "900": 51.3, "per_100kg_above_900": 13.8, "3300": 378.68, "per_100kg_above_3300": 9.58},
+            "fuel_surcharge": {
+                "diesel": {"500": 67.19, "600": 79.54, "700": 91.87, "800": 104.43, "900": 122.2, "per_100kg_above_900": 13.24},
+                "overige": {"500": 78.84, "600": 94.5, "700": 110.18, "800": 125.82, "900": 137.43, "per_100kg_above_900": 14.56},
+                "lpg_g3": {"500": 0, "600": 0, "700": 0, "800": 0, "900": 15.21, "per_100kg_above_900": 15.21}
+            },
+            "zero_emission_factor": 0.0,
+            "low_emission_factor": 0.5,
+            "fijnstoftoeslag": 0.19
+        },
+        "motorcycle": {
+            "value": 24.91,
+            "zero_emission_factor": 0.0
+        },
+        "kwarttarief": {
+            "value": 127
+        },
+        "opcenten": {
+            "drenthe": 92.0,
+            "flevoland": 80.6,
+            "friesland": 87.0,
+            "gelderland": 87.2,
+            "groningen": 91.8,
+            "limburg": 77.9,
+            "noord-brabant": 78.0,
+            "noord-holland": 67.9,
+            "overijssel": 79.9,
+            "utrecht": 73.6,
+            "zeeland": 89.1,
+            "zuid-holland": 90.4
+        }
+    },
+    "2021": {
+        "car": {
+            "base": {"500": 17.41, "600": 23.62, "700": 30.02, "800": 39.19, "900": 52.12, "per_100kg_above_900": 14.02, "3300": 384.74, "per_100kg_above_3300": 9.73},
+            "fuel_surcharge": {
+                "diesel": {"500": 68.27, "600": 80.81, "700": 93.34, "800": 106.1, "900": 124.16, "per_100kg_above_900": 13.45},
+                "overige": {"500": 80.1, "600": 96.01, "700": 111.94, "800": 127.83, "900": 139.63, "per_100kg_above_900": 14.79},
+                "lpg_g3": {"500": 0, "600": 0, "700": 0, "800": 0, "900": 15.45, "per_100kg_above_900": 15.45}
+            },
+            "zero_emission_factor": 0.0,
+            "low_emission_factor": 0.5,
+            "fijnstoftoeslag": 0.19
+        },
+        "motorcycle": {
+            "value": 25.31,
+            "zero_emission_factor": 0.0
+        },
+        "kwarttarief": {
+            "value": 129
+        },
+        "opcenten": {
+            "drenthe": 92.0,
+            "flevoland": 81.4,
+            "friesland": 87.0,
+            "gelderland": 89.5,
+            "groningen": 93.3,
+            "limburg": 77.9,
+            "noord-brabant": 78.4,
+            "noord-holland": 67.9,
+            "overijssel": 79.9,
+            "utrecht": 74.9,
+            "zeeland": 89.1,
+            "zuid-holland": 90.4
+        }
+    },
+    "2022": {
+        "car": {
+            "base": {"500": 17.64, "600": 23.93, "700": 30.41, "800": 39.7, "900": 52.8, "per_100kg_above_900": 14.2, "3300": 389.74, "per_100kg_above_3300": 9.86},
+            "fuel_surcharge": {
+                "diesel": {"500": 69.16, "600": 81.86, "700": 94.55, "800": 107.48, "900": 125.77, "per_100kg_above_900": 13.62},
+                "overige": {"500": 81.14, "600": 97.26, "700": 113.4, "800": 129.49, "900": 141.45, "per_100kg_above_900": 14.98},
+                "lpg_g3": {"500": 0, "600": 0, "700": 0, "800": 0, "900": 15.65, "per_100kg_above_900": 15.65}
+            },
+            "zero_emission_factor": 0.0,
+            "low_emission_factor": 0.5,
+            "fijnstoftoeslag": 0.19
+        },
+        "motorcycle": {
+            "value": 25.64,
+            "zero_emission_factor": 0.0
+        },
+        "kwarttarief": {
+            "value": 130
+        },
+        "opcenten": {
+            "drenthe": 92.0,
+            "flevoland": 82.2,
+            "friesland": 87.0,
+            "gelderland": 90.6,
+            "groningen": 94.5,
+            "limburg": 79.1,
+            "noord-brabant": 79.6,
+            "noord-holland": 67.9,
+            "overijssel": 79.9,
+            "utrecht": 77.5,
+            "zeeland": 82.3,
+            "zuid-holland": 91.8
         }
     },
     "2023": {

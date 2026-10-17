@@ -17,6 +17,64 @@ OV = EnergySource.OVERIGE
 # (weight, energy source, extra Car arguments, expected tax per three months)
 # Oldtimers (1980) pay nothing, the kwarttarief (1987) only applies to benzine.
 TOTAL_TAX = {
+    # 2014-2022: computed from the law text, not checked with the calculator. The
+    # fijnstoftoeslag only exists since 2020.
+    2014: [
+        (LIGHT_WEIGHT, B, {}, 42),
+        (HEAVY_WEIGHT, B, {}, 137),
+        (LIGHT_WEIGHT, D, {}, 129),
+        (LIGHT_WEIGHT, D, {"diesel_particles": True}, 129),
+        (LIGHT_WEIGHT, E, {}, 0),
+    ],
+    2016: [
+        (LIGHT_WEIGHT, B, {}, 43),
+        (HEAVY_WEIGHT, B, {}, 138),
+        (LIGHT_WEIGHT, D, {}, 131),
+        (LIGHT_WEIGHT, D, {"diesel_particles": True}, 131),
+        (LIGHT_WEIGHT, E, {}, 0),
+    ],
+    2017: [
+        (LIGHT_WEIGHT, B, {}, 42),
+        (HEAVY_WEIGHT, B, {}, 136),
+        (LIGHT_WEIGHT, D, {}, 131),
+        (LIGHT_WEIGHT, D, {"diesel_particles": True}, 131),
+        (LIGHT_WEIGHT, E, {}, 0),
+    ],
+    2018: [
+        (LIGHT_WEIGHT, B, {}, 42),
+        (HEAVY_WEIGHT, B, {}, 137),
+        (LIGHT_WEIGHT, D, {}, 131),
+        (LIGHT_WEIGHT, D, {"diesel_particles": True}, 131),
+        (LIGHT_WEIGHT, E, {}, 0),
+    ],
+    2019: [
+        (LIGHT_WEIGHT, B, {}, 42),
+        (HEAVY_WEIGHT, B, {}, 138),
+        (LIGHT_WEIGHT, D, {}, 133),
+        (LIGHT_WEIGHT, D, {"diesel_particles": True}, 133),
+        (LIGHT_WEIGHT, E, {}, 0),
+    ],
+    2020: [
+        (LIGHT_WEIGHT, B, {}, 43),
+        (HEAVY_WEIGHT, B, {}, 139),
+        (LIGHT_WEIGHT, D, {}, 135),
+        (LIGHT_WEIGHT, D, {"diesel_particles": True}, 158),
+        (LIGHT_WEIGHT, E, {}, 0),
+    ],
+    2021: [
+        (LIGHT_WEIGHT, B, {}, 43),
+        (HEAVY_WEIGHT, B, {}, 141),
+        (LIGHT_WEIGHT, D, {}, 137),
+        (LIGHT_WEIGHT, D, {"diesel_particles": True}, 160),
+        (LIGHT_WEIGHT, E, {}, 0),
+    ],
+    2022: [
+        (LIGHT_WEIGHT, B, {}, 44),
+        (HEAVY_WEIGHT, B, {}, 142),
+        (LIGHT_WEIGHT, D, {}, 138),
+        (LIGHT_WEIGHT, D, {"diesel_particles": True}, 162),
+        (LIGHT_WEIGHT, E, {}, 0),
+    ],
     2023: [
         (LIGHT_WEIGHT, B, {}, 46),
         (LIGHT_WEIGHT, E, {}, 0),
@@ -131,6 +189,18 @@ class TestCarTotalTax(unittest.TestCase):
             clean.calculate_total_tax(2015, PROVINCE),
         )
 
+    def test_hydrogen_is_taxed_like_electric(self):
+        """Art. 23 lid 2: no brandstoftoeslag, art. 23b (before 2025 art. 31): zero emission"""
+        for year in TOTAL_TAX:
+            for weight in (LIGHT_WEIGHT, HEAVY_WEIGHT):
+                with self.subTest(year=year, weight=weight):
+                    hydrogen = Car(weight=weight, energy_source=EnergySource.WATERSTOF)
+                    electric = Car(weight=weight, energy_source=E)
+                    self.assertEqual(
+                        hydrogen.calculate_total_tax(year, PROVINCE),
+                        electric.calculate_total_tax(year, PROVINCE),
+                    )
+
     def test_lpg_is_not_an_alias_of_overige(self):
         self.assertIsNot(EnergySource.LPG, EnergySource.OVERIGE)
 
@@ -143,7 +213,13 @@ class TestCarYearlyTax(unittest.TestCase):
     def test_kwarttarief_uses_previous_year_tariff(self):
         """Wet MRB 1994 art. 84a: one quarter of last year's tariff, paid per year"""
         car = Car(weight=LIGHT_WEIGHT, energy_source=B, manufacturing_year=1987)
-        for year, expected in {2024: 48, 2025: 51, 2026: 52}.items():
+        for year, expected in {
+            2015: 42,
+            2023: 44,
+            2024: 48,
+            2025: 51,
+            2026: 52,
+        }.items():
             with self.subTest(year=year):
                 self.assertEqual(car.calculate_yearly_tax(year, PROVINCE), expected)
 

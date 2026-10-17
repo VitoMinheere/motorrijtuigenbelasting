@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)  
 ![Python](https://img.shields.io/badge/Python-3.10%2B-brightgreen)  
 
-Motorrijtuigenbelasting is a Python library designed to calculate Dutch road taxes (motorrijtuigenbelasting, MRB) for passenger cars, motorcycles, and other vehicle types. It provides tools for determining taxes based on weight, fuel type, and provincial rates for 2015 and 2023 to 2026. Rates are taken from the Wet op de motorrijtuigenbelasting 1994 as it applied on 1 January of each year.
+Motorrijtuigenbelasting is a Python library designed to calculate Dutch road taxes (motorrijtuigenbelasting, MRB) for passenger cars, motorcycles, and other vehicle types. It provides tools for determining taxes based on weight, fuel type, and provincial rates for 2014 to 2026. Rates are taken from the Wet op de motorrijtuigenbelasting 1994 as it applied on 1 January of each year, and the provincial opcenten from CBS StatLine table [80889ned](https://opendata.cbs.nl/statline/#/CBS/nl/dataset/80889ned/table).
 
 ## Features  
 
@@ -84,7 +84,7 @@ If you only know the eigen massa, add 100 kg before passing it in.
 ## Supported Vehicle Types  
 
 ### Passenger Cars  
-Supports fuel types like benzine, diesel, LPG, LPG G3, and electric vehicles.  
+Supports fuel types like benzine, diesel, LPG, LPG G3, electric and hydrogen (waterstof) vehicles.  
 
 ### Oldtimer & kwarttarief ruling
 Vehicles taken into use 40 or more years ago pay no tax. Vehicles taken into use before 1988 that are not yet 40 years old can use the kwarttarief (art. 84a): once per year the quarterly tariff of the previous year including opcenten, up to a maximum. For cars this only applies to benzine.

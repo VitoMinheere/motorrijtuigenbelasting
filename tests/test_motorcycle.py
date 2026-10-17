@@ -10,7 +10,7 @@ E = EnergySource.ELEKTRICITEIT
 TOTAL_TAX = {
     2024: [
         ("noord-holland", B, None, 36),
-        ("noord-holland", E, None, 0),  # Electric motorcycles were exempt
+        ("noord-holland", E, None, 0),  # Art. 31: nihil
         ("gelderland", B, None, 37),
         ("gelderland", E, None, 0),
         ("gelderland", B, 1980, 0),
@@ -18,7 +18,7 @@ TOTAL_TAX = {
     ],
     2025: [
         ("noord-holland", B, None, 36),
-        ("noord-holland", E, None, 9),  # Electric motorcycles paid 25%
+        ("noord-holland", E, None, 9),  # Art. 31: een kwart
         ("gelderland", B, None, 38),
         ("gelderland", E, None, 9),
         ("gelderland", B, 1980, 0),
@@ -26,7 +26,7 @@ TOTAL_TAX = {
     ],
     2026: [
         ("noord-holland", B, None, 37),
-        # Art. 23b only covers personenauto's, electric motorcycles pay in full
+        # Art. 31 was removed and art. 23b only covers personenauto's, so they pay in full
         ("noord-holland", E, None, 37),
         ("gelderland", B, None, 38),
         ("gelderland", E, None, 38),

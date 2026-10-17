@@ -147,7 +147,7 @@ Other vehicles types are being worked on in the following order:
 
 ## Contributing  
 
-We welcome contributions! Please follow these steps:  
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for the development setup and how to add a new tax year. In short:  
 
 1. Fork the repository.  
 2. Create a new branch for your feature or bugfix.  

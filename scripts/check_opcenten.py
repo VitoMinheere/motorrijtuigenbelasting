@@ -4,6 +4,7 @@ Usage: python scripts/check_opcenten.py
 Exits with status 1 when a value differs or is missing at CBS.
 """
 
+import functools
 import json
 import sys
 import urllib.request
@@ -28,6 +29,7 @@ def province_key(title: str) -> str:
     return CBS_NAMES.get(name, name)
 
 
+@functools.cache
 def cbs_opcenten() -> dict:
     regions = {row["Key"]: row["Title"] for row in fetch("RegioS")}
     opcenten = {}

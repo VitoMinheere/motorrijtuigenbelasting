@@ -28,6 +28,9 @@ dependencies = []
 [project.optional-dependencies]
 dev = ["ruff", "black"]
 
+[project.scripts]
+mrb = "motorrijtuigenbelasting.__main__:main"
+
 [project.urls]
 "Source Code" = "https://github.com/VitoMinheere/motorrijtuigenbelasting"
 "Issue Tracker" = "https://github.com/VitoMinheere/motorrijtuigenbelasting/issues"

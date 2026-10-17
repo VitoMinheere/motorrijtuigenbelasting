@@ -4,8 +4,9 @@ from motorrijtuigenbelasting.vehicles.car import Car
 from motorrijtuigenbelasting.vehicles import EnergySource
 
 PROVINCE = "noord-holland"
-LIGHT_WEIGHT = 720
-HEAVY_WEIGHT = 1200
+# Massa rijklaar, which is eigen massa + 100 kg
+LIGHT_WEIGHT = 820
+HEAVY_WEIGHT = 1300
 
 
 class TestCarTaxCalculations2023(unittest.TestCase):
@@ -73,7 +74,7 @@ class TestCarTaxCalculations2024(unittest.TestCase):
         self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
 
     def test_calculate_tax_benzine_with_heavy(self):
-        car = Car(weight=3500, energy_source=EnergySource.BENZINE)
+        car = Car(weight=3600, energy_source=EnergySource.BENZINE)
         result = 739
 
         self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
@@ -197,7 +198,7 @@ class TestCarTaxCalculations2025(unittest.TestCase):
         self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
 
     def test_calculate_tax_benzine_with_heavy(self):
-        car = Car(weight=3500, energy_source=EnergySource.BENZINE)
+        car = Car(weight=3600, energy_source=EnergySource.BENZINE)
         result = 745
 
         self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
@@ -320,7 +321,7 @@ class TestCarTaxCalculations2026(unittest.TestCase):
         self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
 
     def test_calculate_tax_benzine_with_heavy(self):
-        car = Car(weight=3500, energy_source=EnergySource.BENZINE)
+        car = Car(weight=3600, energy_source=EnergySource.BENZINE)
         result = 775
 
         self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
@@ -339,9 +340,13 @@ class TestCarTaxCalculations2026(unittest.TestCase):
 
     def test_calculate_tax_lpg(self):
         car = Car(weight=LIGHT_WEIGHT, energy_source=EnergySource.LPG)
-        result = 168
+        result = 191
 
         self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), result)
+
+        # Checked with the Belastingdienst calculator
+        car = Car(weight=720, energy_source=EnergySource.LPG)
+        self.assertEqual(car.calculate_total_tax(self.YEAR, PROVINCE), 161)
 
     def test_calculate_tax_other_fuel(self):
         car = Car(weight=LIGHT_WEIGHT, energy_source=EnergySource.OVERIGE)

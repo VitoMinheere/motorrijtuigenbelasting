@@ -1,5 +1,5 @@
 from ..tax_data import get_tax_value, rate_for_weight
-from .base import Vehicle
+from .base import Moment, Vehicle
 from .constants import MASSA_RIJKLAAR_OFFSET, OPCENTEN_BASE
 from .energy_source import EnergySource
 
@@ -20,7 +20,7 @@ class Car(Vehicle):
     Args:
         weight (int): Massa rijklaar in kg, as shown in the RDW kentekenregister.
         energy_source (EnergySource): Fuel type as registered.
-        manufacturing_year (int, optional): Year the car was first taken into use.
+        manufacturing_year (int | date, optional): Datum eerste toelating, or only its year.
         co2_emissions (bool, optional): CO2 emission above 0 but at most 50 g/km.
         diesel_particles (bool, optional): Particle emission above the Euro 5 limit.
     """
@@ -31,7 +31,7 @@ class Car(Vehicle):
         self,
         weight: int,
         energy_source: EnergySource,
-        manufacturing_year: int | None = None,
+        manufacturing_year: Moment | None = None,
         co2_emissions: bool = False,
         diesel_particles: bool = False,
     ):
@@ -75,7 +75,7 @@ class Car(Vehicle):
             return get_tax_value(year, "car", "low_emission_factor")
         return super().emission_factor(year)
 
-    def is_kwarttarief(self, year: int) -> bool:
+    def is_kwarttarief(self, year: Moment) -> bool:
         """Only benzine cars can use the kwarttarief (art. 84a lid 3b)"""
         return self.energy_source == EnergySource.BENZINE and super().is_kwarttarief(
             year

@@ -1,7 +1,9 @@
+import datetime
 import unittest
 
 from motorrijtuigenbelasting import Car, EnergySource
 from motorrijtuigenbelasting.tax_data import rate_for_weight, round_weight
+from motorrijtuigenbelasting.vehicles.base import anniversary, as_date
 
 TABLE = {
     "500": 10.0,
@@ -60,3 +62,16 @@ class TestWeight(unittest.TestCase):
         for weight, expected in cases.items():
             with self.subTest(weight=weight):
                 self.assertEqual(rate_for_weight(TABLE, weight), expected)
+
+
+class TestDates(unittest.TestCase):
+    def test_anniversary_of_29_february(self):
+        self.assertEqual(
+            anniversary(datetime.date(1984, 2, 29), 40), datetime.date(2024, 2, 29)
+        )
+        self.assertEqual(
+            anniversary(datetime.date(1984, 2, 29), 41), datetime.date(2025, 3, 1)
+        )
+
+    def test_year_means_1_january(self):
+        self.assertEqual(as_date(2026), datetime.date(2026, 1, 1))

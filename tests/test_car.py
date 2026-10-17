@@ -1,3 +1,4 @@
+import datetime
 import unittest
 
 from motorrijtuigenbelasting import Car, EnergySource
@@ -200,6 +201,30 @@ class TestCarTotalTax(unittest.TestCase):
                         hydrogen.calculate_total_tax(year, PROVINCE),
                         electric.calculate_total_tax(year, PROVINCE),
                     )
+
+    def test_oldtimer_from_the_day_it_turns_40(self):
+        """Art. 72 counts from the datum eerste toelating, not from 1 January"""
+        car = Car(
+            weight=LIGHT_WEIGHT,
+            energy_source=D,
+            manufacturing_year=datetime.date(1986, 11, 15),
+        )
+        self.assertEqual(car.manufacturing_year, 1986)
+        self.assertEqual(
+            car.calculate_total_tax(datetime.date(2026, 10, 1), PROVINCE), 168
+        )
+        self.assertEqual(
+            car.calculate_total_tax(datetime.date(2026, 11, 15), PROVINCE), 0
+        )
+        # A year still means 1 January
+        self.assertEqual(car.calculate_total_tax(2026, PROVINCE), 168)
+        self.assertEqual(car.calculate_total_tax(2027, PROVINCE), 0)
+
+    def test_kwarttarief_needs_admission_before_1988(self):
+        late = Car(LIGHT_WEIGHT, B, manufacturing_year=datetime.date(1987, 12, 31))
+        early_1988 = Car(LIGHT_WEIGHT, B, manufacturing_year=datetime.date(1988, 1, 1))
+        self.assertTrue(late.is_kwarttarief(2026))
+        self.assertFalse(early_1988.is_kwarttarief(2026))
 
     def test_lpg_is_not_an_alias_of_overige(self):
         self.assertIsNot(EnergySource.LPG, EnergySource.OVERIGE)

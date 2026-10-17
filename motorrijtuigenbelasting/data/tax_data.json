@@ -8,7 +8,8 @@
                 "lpg_g3": {"500": 0, "600": 0, "700": 0, "800": 0, "900": 14.56, "per_100kg_above_900": 14.56}
             },
             "zero_emission_factor": 0.0,
-            "low_emission_factor": 0.0
+            "low_emission_factor": 0.0,
+            "fijnstoftoeslag": 0.0
         },
         "motorcycle": {
             "value": 23.85,
@@ -41,7 +42,8 @@
                 "lpg_g3": {"500": 0, "600": 0, "700": 0, "800": 0, "900": 16.64, "per_100kg_above_900": 16.64}
             },
             "zero_emission_factor": 0.0,
-            "low_emission_factor": 0.5
+            "low_emission_factor": 0.5,
+            "fijnstoftoeslag": 0.19
         },
         "motorcycle": {
             "value": 27.26,
@@ -74,7 +76,8 @@
                 "lpg_g3": {"500": 0, "600": 0, "700": 0, "800": 0, "900": 18.29, "per_100kg_above_900": 18.29}
             },
             "zero_emission_factor": 0.0,
-            "low_emission_factor": 0.5
+            "low_emission_factor": 0.5,
+            "fijnstoftoeslag": 0.19
         },
         "motorcycle": {
             "value": 29.96,
@@ -107,7 +110,8 @@
                 "lpg_g3": {"500": 0, "600": 0, "700": 0, "800": 0, "900": 18.51, "per_100kg_above_900": 18.51}
             },
             "zero_emission_factor": 0.25,
-            "low_emission_factor": 0.75
+            "low_emission_factor": 0.75,
+            "fijnstoftoeslag": 0.19
         },
         "motorcycle": {
             "value": 30.32,
@@ -140,7 +144,8 @@
                 "lpg_g3": {"500": 0, "600": 0, "700": 0, "800": 0, "900": 19.05, "per_100kg_above_900": 19.05}
             },
             "zero_emission_factor": 0.7,
-            "low_emission_factor": 1.0
+            "low_emission_factor": 1.0,
+            "fijnstoftoeslag": 0.19
         },
         "motorcycle": {
             "value": 31.2,

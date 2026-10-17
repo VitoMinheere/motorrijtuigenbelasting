@@ -24,6 +24,3 @@ MOTORCYCLE_OPCENTEN_BASE = 7.80
 # The RDW sets massa rijklaar at eigen massa + 100 kg. Since 1 July 2026 the law uses massa
 # rijklaar, before that eigen massa. The weight tables in this package are in eigen massa.
 MASSA_RIJKLAAR_OFFSET = 100
-
-# Wet MRB 1994 art. 23 lid 4
-FIJNSTOFTOESLAG = 0.19

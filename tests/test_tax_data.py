@@ -54,7 +54,11 @@ class TestTaxDataSchema(unittest.TestCase):
             with self.subTest(year=year):
                 self.assertEqual(set(data["opcenten"]), PROVINCES)
                 self.assertEqual(set(data["car"]["fuel_surcharge"]), FUEL_SURCHARGES)
-                for key in ("zero_emission_factor", "low_emission_factor"):
+                for key in (
+                    "zero_emission_factor",
+                    "low_emission_factor",
+                    "fijnstoftoeslag",
+                ):
                     self.assertIn(key, data["car"])
                 for key in ("value", "zero_emission_factor"):
                     self.assertIn(key, data["motorcycle"])
@@ -79,6 +83,7 @@ class TestTaxDataSchema(unittest.TestCase):
             for category, key in (
                 ("car", "zero_emission_factor"),
                 ("car", "low_emission_factor"),
+                ("car", "fijnstoftoeslag"),
                 ("motorcycle", "zero_emission_factor"),
             ):
                 with self.subTest(year=year, key=f"{category}.{key}"):

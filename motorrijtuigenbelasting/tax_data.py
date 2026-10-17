@@ -45,9 +45,9 @@ def round_down(amount: float) -> int:
     return math.floor(round(amount, 2))
 
 
-def round_weight(weight: int) -> int:
+def round_weight(weight: float) -> int:
     """Wet MRB 1994 art. 22 lid 1b: round to the nearest 100 kg, exactly 50 kg rounds down."""
-    return 100 * ((weight + 49) // 100)
+    return 100 * math.ceil((weight - 50) / 100)
 
 
 def steps_above(weight: int, cut_off: int, step: int = 100) -> int:

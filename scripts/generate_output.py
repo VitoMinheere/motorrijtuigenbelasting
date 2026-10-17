@@ -19,7 +19,7 @@ def generate(energy_source: EnergySource) -> dict:
         province: {
             str(weight): {
                 str(year): Car(weight, energy_source).calculate_total_tax(
-                    year, province
+                    year=year, province=province
                 )
                 for year in SUPPORTED_YEARS
             }

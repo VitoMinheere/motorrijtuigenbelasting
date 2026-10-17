@@ -131,6 +131,18 @@ class TestCarTotalTax(unittest.TestCase):
             clean.calculate_total_tax(2015, PROVINCE),
         )
 
+    def test_hydrogen_is_taxed_like_electric(self):
+        """Art. 23 lid 2: no brandstoftoeslag, art. 23b (before 2025 art. 31): zero emission"""
+        for year in TOTAL_TAX:
+            for weight in (LIGHT_WEIGHT, HEAVY_WEIGHT):
+                with self.subTest(year=year, weight=weight):
+                    hydrogen = Car(weight=weight, energy_source=EnergySource.WATERSTOF)
+                    electric = Car(weight=weight, energy_source=E)
+                    self.assertEqual(
+                        hydrogen.calculate_total_tax(year, PROVINCE),
+                        electric.calculate_total_tax(year, PROVINCE),
+                    )
+
     def test_lpg_is_not_an_alias_of_overige(self):
         self.assertIsNot(EnergySource.LPG, EnergySource.OVERIGE)
 

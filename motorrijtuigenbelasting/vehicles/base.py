@@ -15,6 +15,8 @@ OLDTIMER_AGE = 40
 # Wet MRB 1994 art. 84a lid 3a
 KWARTTARIEF_BEFORE_YEAR = 1988
 
+ZERO_EMISSION_SOURCES = {EnergySource.ELEKTRICITEIT, EnergySource.WATERSTOF}
+
 
 class Vehicle(ABC):
     """
@@ -65,7 +67,7 @@ class Vehicle(ABC):
 
     def emission_factor(self, year: int) -> float:
         """Share of the tax that is due after zero emission discounts."""
-        if self.is_electric():
+        if self.is_zero_emission():
             return get_tax_value(year, self.TAX_CATEGORY, "zero_emission_factor")
         return 1.0
 
@@ -135,6 +137,10 @@ class Vehicle(ABC):
 
     def is_electric(self) -> bool:
         return self.energy_source == EnergySource.ELEKTRICITEIT
+
+    def is_zero_emission(self) -> bool:
+        """Driven only by electricity or hydrogen (art. 23b lid 1, before 2026 art. 31)"""
+        return self.energy_source in ZERO_EMISSION_SOURCES
 
     def calculate_multiplier(self, cut_off: int = 900, step: int = 100) -> int:
         """Calculate the amount of weight steps above the cut off

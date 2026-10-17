@@ -13,4 +13,5 @@ class EnergySource(Enum):
     LPG = "lpg"
     LPG_G3 = "lpg_g3"
     ELEKTRICITEIT = "elektriciteit"
+    WATERSTOF = "waterstof"
     OVERIGE = "overige"

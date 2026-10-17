@@ -84,7 +84,7 @@ If you only know the eigen massa, add 100 kg before passing it in.
 ## Supported Vehicle Types  
 
 ### Passenger Cars  
-Supports fuel types like benzine, diesel, LPG, LPG G3, and electric vehicles.  
+Supports fuel types like benzine, diesel, LPG, LPG G3, electric and hydrogen (waterstof) vehicles.  
 
 ### Oldtimer & kwarttarief ruling
 Vehicles taken into use 40 or more years ago pay no tax. Vehicles taken into use before 1988 that are not yet 40 years old can use the kwarttarief (art. 84a): once per year the quarterly tariff of the previous year including opcenten, up to a maximum. For cars this only applies to benzine.

@@ -13,9 +13,26 @@ from .energy_source import EnergySource
 # Wet MRB 1994 art. 72 lid 1b
 OLDTIMER_AGE = 40
 # Wet MRB 1994 art. 84a lid 3a
-KWARTTARIEF_BEFORE_YEAR = 1988
+KWARTTARIEF_BEFORE = datetime.date(1988, 1, 1)
 
 ZERO_EMISSION_SOURCES = {EnergySource.ELEKTRICITEIT, EnergySource.WATERSTOF}
+
+# A year means 1 January of that year
+Moment = int | datetime.date
+
+
+def as_date(moment: Moment) -> datetime.date:
+    if isinstance(moment, datetime.date):
+        return moment
+    return datetime.date(moment, 1, 1)
+
+
+def anniversary(start: datetime.date, years: int) -> datetime.date:
+    """The same day `years` later, 29 February moves to 1 March."""
+    try:
+        return start.replace(year=start.year + years)
+    except ValueError:
+        return datetime.date(start.year + years, 3, 1)
 
 
 class Vehicle(ABC):
@@ -28,12 +45,17 @@ class Vehicle(ABC):
     Attributes:
         rounded_weight (int): Eigen massa of the vehicle, rounded to the nearest hundred kilograms.
         energy_source (EnergySource): The type of energy source used by the vehicle (e.g., benzine, diesel, electric).
-        manufacturing_year (int): The year the vehicle was first taken into use.
+        first_admission (date): Datum eerste toelating, when the vehicle was first taken into use.
+        manufacturing_year (int): The year of first_admission.
 
     Args:
         weight (int): Eigen massa of the vehicle in kilograms.
         energy_source (EnergySource): An instance of the `EnergySource` enum representing the vehicle's fuel type.
-        manufacturing_year (int, optional): The year the vehicle was first taken into use. Defaults to this year.
+        manufacturing_year (int | date, optional): Datum eerste toelating, or only its year,
+            which counts as 1 January. Defaults to today.
+
+    Methods that take a `year` also accept a date. The tariff of that date's year is
+    used, and the date decides whether the oldtimer rule applies.
     """
 
     # Category in tax_data.json that holds the rates for this vehicle type
@@ -43,15 +65,19 @@ class Vehicle(ABC):
         self,
         weight: int,
         energy_source: EnergySource,
-        manufacturing_year: int | None = None,
+        manufacturing_year: Moment | None = None,
     ):
         self.rounded_weight = round_weight(weight)
         self.energy_source = energy_source
-        self.manufacturing_year = (
-            manufacturing_year
+        self.first_admission = (
+            as_date(manufacturing_year)
             if manufacturing_year is not None
-            else datetime.date.today().year
+            else datetime.date.today()
         )
+
+    @property
+    def manufacturing_year(self) -> int:
+        return self.first_admission.year
 
     @abstractmethod
     def calculate_base_tax(self, year: int) -> float:
@@ -85,7 +111,7 @@ class Vehicle(ABC):
         )
         return tax * self.emission_factor(tariff_year)
 
-    def calculate_total_tax(self, year: int, province: str) -> int:
+    def calculate_total_tax(self, year: Moment, province: str) -> int:
         """
         Calculate the tax due per three months, rounded down to whole euros.
 
@@ -93,7 +119,7 @@ class Vehicle(ABC):
         of `calculate_yearly_tax`, rounded down, to compare it with other vehicles.
 
         Args:
-            year (int): Year for which tax is calculated.
+            year (int | date): Year, or the start of the three months, to calculate.
             province (str): Province where the vehicle is registered.
 
         Returns:
@@ -105,9 +131,9 @@ class Vehicle(ABC):
             return 0
 
         # Belastingdienst always rounds down to a whole number (Wet MRB 1994 art. 82)
-        return round_down(self.calculate_quarterly_tax(year, province))
+        return round_down(self.calculate_quarterly_tax(as_date(year).year, province))
 
-    def calculate_yearly_tax(self, year: int, province: str) -> int:
+    def calculate_yearly_tax(self, year: Moment, province: str) -> int:
         """
         Calculate the tax due for a whole year, rounded down to whole euros.
 
@@ -116,24 +142,24 @@ class Vehicle(ABC):
         including this year's opcenten, up to a maximum.
         """
         if self.is_kwarttarief(year):
+            tax_year = as_date(year).year
             return round_down(
                 min(
-                    self.calculate_quarterly_tax(year, province, tariff_year=year - 1),
-                    get_tax_value(year, "kwarttarief", "value"),
+                    self.calculate_quarterly_tax(
+                        tax_year, province, tariff_year=tax_year - 1
+                    ),
+                    get_tax_value(tax_year, "kwarttarief", "value"),
                 )
             )
         return 4 * self.calculate_total_tax(year, province)
 
-    def is_historic(self, year: int) -> bool:
+    def is_historic(self, year: Moment) -> bool:
         """Oldtimer ruling applies when vehicle was taken into use 40 or more years ago"""
-        return year - self.manufacturing_year >= OLDTIMER_AGE
+        return as_date(year) >= anniversary(self.first_admission, OLDTIMER_AGE)
 
-    def is_kwarttarief(self, year: int) -> bool:
+    def is_kwarttarief(self, year: Moment) -> bool:
         """Kwarttarief applies when a vehicle is taken into use before 1988 and is not yet 40 years old"""
-        return (
-            self.manufacturing_year < KWARTTARIEF_BEFORE_YEAR
-            and not self.is_historic(year)
-        )
+        return self.first_admission < KWARTTARIEF_BEFORE and not self.is_historic(year)
 
     def is_electric(self) -> bool:
         return self.energy_source == EnergySource.ELEKTRICITEIT

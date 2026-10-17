@@ -1,7 +1,8 @@
 """Look up vehicle details by kenteken in the RDW open data.
 
-Uses the public datasets "Gekentekende voertuigen" (m9d7-ebf2) and
-"Gekentekende voertuigen brandstof" (8ys7-d773). No API key is needed.
+Uses the public datasets "Gekentekende voertuigen" (m9d7-ebf2), "Gekentekende
+voertuigen brandstof" (8ys7-d773) and, for LPG cars, "Toegevoegde objecten"
+(sghb-dzxx). No API key is needed.
 """
 
 import datetime
@@ -18,6 +19,12 @@ from .vehicles.motorcycle import Motorcycle
 
 VEHICLES_URL = "https://opendata.rdw.nl/resource/m9d7-ebf2.json"
 FUELS_URL = "https://opendata.rdw.nl/resource/8ys7-d773.json"
+ADDED_OBJECTS_URL = "https://opendata.rdw.nl/resource/sghb-dzxx.json"
+
+LPG_INSTALLATION = "LPG Installatie"
+# Art. 23 lid 3: the lower surcharge applies to G3 and R115 installations. The open
+# data shortens R115 to "R1".
+G3_CLASSIFICATIONS = {"G3", "R1", "R115"}
 
 # Wet MRB 1994 art. 23 lid 4: fijnstoftoeslag above 5 mg/km (light) or 10 mg/kWh (heavy)
 PARTICLE_LIMIT_MG_PER_KM = 5
@@ -66,7 +73,7 @@ def energy_source(fuels: set[str]) -> EnergySource:
     # Art. 23 lid 3: CNG and LNG pay the same surcharge as LPG with a G3 installation
     if fuels & {"CNG", "LNG"}:
         return EnergySource.LPG_G3
-    # The open data does not say whether an LPG installation is G3, so assume it is not
+    # Whether an LPG installation is G3 is in another dataset, see RdwVehicle
     if "LPG" in fuels:
         return EnergySource.LPG
     if fuels <= {"Benzine", "Elektriciteit"}:
@@ -91,6 +98,17 @@ def co2_emission(
             value = _number(record, field)
             if value is not None:
                 return value
+    return None
+
+
+def lpg_classification(added_objects: list[dict]) -> str | None:
+    """Classification of the LPG installation that is still mounted, e.g. "G3"."""
+    for record in added_objects:
+        if record.get("soort_toe_te_voegen_object_omschrijving") != LPG_INSTALLATION:
+            continue
+        if record.get("demontagedatum") not in (None, "", "0"):
+            continue
+        return record.get("classificatie_toegevoegd_obj")
     return None
 
 
@@ -125,16 +143,26 @@ class RdwVehicle:
     fuels: frozenset[str]
     co2_emission: float | None
     diesel_particles: bool
+    lpg_classification: str | None = None
 
     @property
     def energy_source(self) -> EnergySource:
-        return energy_source(set(self.fuels))
+        source = energy_source(set(self.fuels))
+        if source == EnergySource.LPG and self.lpg_classification in G3_CLASSIFICATIONS:
+            return EnergySource.LPG_G3
+        return source
 
     @property
     def low_co2(self) -> bool:
         return self.co2_emission is not None and 0 < self.co2_emission <= LOW_CO2_LIMIT
 
-    def to_vehicle(self) -> Vehicle:
+    def to_vehicle(self, energy_source: EnergySource | None = None) -> Vehicle:
+        """Turn the details into a Car or Motorcycle.
+
+        `energy_source` overrides the one derived from the open data, e.g. for a
+        factory fitted LPG installation that is not in the open data.
+        """
+        source = energy_source or self.energy_source
         if self.voertuigsoort == "Personenauto":
             if self.inrichting == "kampeerwagen":
                 raise NotImplementedError("Kampeerauto's are not supported yet")
@@ -142,7 +170,7 @@ class RdwVehicle:
                 raise ValueError(f"No massa rijklaar registered for {self.kenteken}")
             return Car(
                 weight=self.massa_rijklaar,
-                energy_source=self.energy_source,
+                energy_source=source,
                 manufacturing_year=self.first_admission,
                 co2_emissions=self.low_co2,
                 diesel_particles=self.diesel_particles,
@@ -150,7 +178,7 @@ class RdwVehicle:
         if self.voertuigsoort == "Motorfiets":
             return Motorcycle(
                 weight=self.massa_rijklaar or 0,
-                energy_source=self.energy_source,
+                energy_source=source,
                 manufacturing_year=self.first_admission,
             )
         raise NotImplementedError(f"{self.voertuigsoort} is not supported yet")
@@ -164,6 +192,10 @@ def lookup(kenteken: str, fetch: Fetch = fetch_json) -> RdwVehicle:
         raise ValueError(f"Kenteken {kenteken} not found in the RDW open data")
     vehicle = vehicles[0]
     fuel_records = fetch(FUELS_URL, {"kenteken": kenteken})
+    fuels = frozenset(r["brandstof_omschrijving"] for r in fuel_records)
+    added_objects = (
+        fetch(ADDED_OBJECTS_URL, {"kenteken": kenteken}) if "LPG" in fuels else []
+    )
     massa_rijklaar = _number(vehicle, "massa_rijklaar")
     first_admission = datetime.datetime.strptime(
         vehicle["datum_eerste_toelating"], "%Y%m%d"
@@ -174,12 +206,20 @@ def lookup(kenteken: str, fetch: Fetch = fetch_json) -> RdwVehicle:
         inrichting=vehicle.get("inrichting"),
         massa_rijklaar=int(massa_rijklaar) if massa_rijklaar is not None else None,
         first_admission=first_admission,
-        fuels=frozenset(r["brandstof_omschrijving"] for r in fuel_records),
+        fuels=fuels,
         co2_emission=co2_emission(fuel_records, first_admission),
         diesel_particles=has_diesel_particles(fuel_records),
+        lpg_classification=lpg_classification(added_objects),
     )
 
 
-def from_kenteken(kenteken: str, fetch: Fetch = fetch_json) -> Vehicle:
-    """A Car or Motorcycle with the details of a kenteken from the RDW open data."""
-    return lookup(kenteken, fetch).to_vehicle()
+def from_kenteken(
+    kenteken: str,
+    fetch: Fetch = fetch_json,
+    energy_source: EnergySource | None = None,
+) -> Vehicle:
+    """A Car or Motorcycle with the details of a kenteken from the RDW open data.
+
+    `energy_source` overrides the one derived from the open data.
+    """
+    return lookup(kenteken, fetch).to_vehicle(energy_source)

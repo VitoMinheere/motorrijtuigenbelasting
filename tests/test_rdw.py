@@ -3,6 +3,7 @@ import unittest
 
 from motorrijtuigenbelasting import Car, EnergySource, Motorcycle
 from motorrijtuigenbelasting.rdw import (
+    ADDED_OBJECTS_URL,
     FUELS_URL,
     VEHICLES_URL,
     energy_source,
@@ -63,6 +64,46 @@ RESPONSES = {
     (FUELS_URL, "MZ12AB"): [
         {"kenteken": "MZ12AB", "brandstof_omschrijving": "Benzine"}
     ],
+    (VEHICLES_URL, "GG111G"): [
+        {
+            "kenteken": "GG111G",
+            "voertuigsoort": "Personenauto",
+            "massa_rijklaar": "1300",
+            "datum_eerste_toelating": "20100101",
+        }
+    ],
+    (FUELS_URL, "GG111G"): [
+        {"kenteken": "GG111G", "brandstof_omschrijving": "Benzine"},
+        {"kenteken": "GG111G", "brandstof_omschrijving": "LPG"},
+    ],
+    (ADDED_OBJECTS_URL, "GG111G"): [
+        {
+            "kenteken": "GG111G",
+            "demontagedatum": "0",
+            "soort_toe_te_voegen_object_omschrijving": "LPG Installatie",
+            "classificatie_toegevoegd_obj": "G3",
+        }
+    ],
+    (VEHICLES_URL, "GG222G"): [
+        {
+            "kenteken": "GG222G",
+            "voertuigsoort": "Personenauto",
+            "massa_rijklaar": "1300",
+            "datum_eerste_toelating": "20100101",
+        }
+    ],
+    (FUELS_URL, "GG222G"): [
+        {"kenteken": "GG222G", "brandstof_omschrijving": "Benzine"},
+        {"kenteken": "GG222G", "brandstof_omschrijving": "LPG"},
+    ],
+    (ADDED_OBJECTS_URL, "GG222G"): [
+        {
+            "kenteken": "GG222G",
+            "demontagedatum": "0",
+            "soort_toe_te_voegen_object_omschrijving": "LPG Installatie",
+            "classificatie_toegevoegd_obj": "G2",
+        }
+    ],
     (VEHICLES_URL, "VB123B"): [
         {
             "kenteken": "VB123B",
@@ -109,6 +150,33 @@ class TestLookup(unittest.TestCase):
         motor = from_kenteken("MZ-12-AB", fetch=fake_fetch)
         self.assertIsInstance(motor, Motorcycle)
         self.assertTrue(motor.is_kwarttarief(2026))
+
+    def test_lpg_g3_installation(self):
+        """Art. 23 lid 3: G3 installations pay the lower surcharge"""
+        self.assertEqual(
+            from_kenteken("GG-111-G", fetch=fake_fetch).energy_source,
+            EnergySource.LPG_G3,
+        )
+        self.assertEqual(
+            from_kenteken("GG-222-G", fetch=fake_fetch).energy_source,
+            EnergySource.LPG,
+        )
+
+    def test_energy_source_override(self):
+        car = from_kenteken(
+            "GG-222-G", fetch=fake_fetch, energy_source=EnergySource.LPG_G3
+        )
+        self.assertEqual(car.energy_source, EnergySource.LPG_G3)
+
+    def test_added_objects_only_fetched_for_lpg(self):
+        urls = []
+
+        def recording_fetch(url, params):
+            urls.append(url)
+            return fake_fetch(url, params)
+
+        from_kenteken("P-803-KL", fetch=recording_fetch)
+        self.assertNotIn(ADDED_OBJECTS_URL, urls)
 
     def test_unsupported_vehicle_type(self):
         with self.assertRaises(NotImplementedError):

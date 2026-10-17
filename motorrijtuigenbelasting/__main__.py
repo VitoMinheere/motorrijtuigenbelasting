@@ -42,7 +42,7 @@ def parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--fuel",
         choices=[source.value for source in EnergySource],
-        default=EnergySource.BENZINE.value,
+        help="defaults to benzine, with --kenteken it overrides the registered fuel",
     )
     parser.add_argument(
         "--province",
@@ -83,14 +83,14 @@ def build_vehicle(args: argparse.Namespace):
     if args.vehicle == "car":
         return Car(
             weight=args.weight,
-            energy_source=args.fuel,
+            energy_source=args.fuel or EnergySource.BENZINE,
             manufacturing_year=args.first_use,
             co2_emissions=args.low_co2,
             diesel_particles=args.diesel_particles,
         )
     return Motorcycle(
         weight=args.weight or 0,
-        energy_source=args.fuel,
+        energy_source=args.fuel or EnergySource.BENZINE,
         manufacturing_year=args.first_use,
     )
 
@@ -101,7 +101,11 @@ def main(argv: list[str] | None = None) -> int:
     if not args.kenteken and args.vehicle == "car" and args.weight is None:
         arguments.error("--weight is required for a car")
     try:
-        vehicle = from_kenteken(args.kenteken) if args.kenteken else build_vehicle(args)
+        if args.kenteken:
+            override = EnergySource(args.fuel) if args.fuel else None
+            vehicle = from_kenteken(args.kenteken, energy_source=override)
+        else:
+            vehicle = build_vehicle(args)
         breakdown = vehicle.calculate_breakdown(year=args.year, province=args.province)
     except (KeyError, ValueError, NotImplementedError, OSError) as error:
         arguments.error(error.args[0] if error.args else str(error))

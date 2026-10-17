@@ -94,7 +94,7 @@ car = from_kenteken("P-803-KL")
 car.calculate_total_tax(year=2025, province="utrecht")
 ```
 
-Plug-in hybrids count as their combustion fuel, and CO2 decides the low emission discount. The open data does not show whether an LPG installation is G3, so LPG cars are calculated without G3. Vans, trucks and campers raise `NotImplementedError` for now.
+Plug-in hybrids count as their combustion fuel, and CO2 decides the low emission discount. LPG cars with a G3 or R115 installation in the RDW "toegevoegde objecten" get the G3 surcharge. A factory-fitted installation may not be listed there, so you can override the fuel with `from_kenteken(..., energy_source=EnergySource.LPG_G3)` or `mrb --kenteken ... --fuel lpg_g3`. Vans, trucks and campers raise `NotImplementedError` for now.
 
 ### Command line  
 

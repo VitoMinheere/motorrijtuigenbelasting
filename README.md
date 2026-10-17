@@ -19,6 +19,7 @@ Motorrijtuigenbelasting is a Python library designed to calculate Dutch road tax
 1. [Installation](#installation)  
 2. [Usage](#usage)  
    - [Example](#example)  
+   - [Look up a kenteken](#look-up-a-kenteken)  
    - [Command line](#command-line)  
    - [Weight: massa rijklaar](#weight-massa-rijklaar)  
 3. [Supported Vehicle Types](#supported-vehicle-types)  
@@ -82,6 +83,19 @@ breakdown.per_three_months, breakdown.per_year
 
 Use `calculate_yearly_tax` for the amount per year. For most vehicles that is four times the amount per three months. With the kwarttarief you pay once per year, so `calculate_total_tax` returns a quarter of the yearly amount, rounded down.
 
+### Look up a kenteken  
+
+`from_kenteken` reads the weight, fuel, first admission date, CO2 emission and particle emission from the [RDW open data](https://opendata.rdw.nl) (no API key needed) and returns a `Car` or `Motorcycle`:
+
+```python
+from motorrijtuigenbelasting import from_kenteken
+
+car = from_kenteken("P-803-KL")
+car.calculate_total_tax(year=2025, province="utrecht")
+```
+
+Plug-in hybrids count as their combustion fuel, and CO2 decides the low emission discount. The open data does not show whether an LPG installation is G3, so LPG cars are calculated without G3. Vans, trucks and campers raise `NotImplementedError` for now.
+
 ### Command line  
 
 After installing, the `mrb` command (or `python -m motorrijtuigenbelasting`) calculates the tax without writing code:
@@ -92,6 +106,7 @@ mrb --weight 1300 --fuel benzine --province noord-holland --year 2026
 
 mrb --weight 820 --fuel diesel --diesel-particles --province utrecht --breakdown --yearly
 mrb --vehicle motorcycle --province gelderland --first-use 1987 --yearly
+mrb --kenteken P-803-KL --province utrecht
 ```
 
 Run `mrb --help` for all options.

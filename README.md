@@ -137,6 +137,10 @@ Rules for base tax and opcenten added. Added sources to the information in the d
 ### Trailers and caravans (not taxed)
 Aanhangwagens, opleggers and caravans do not pay motorrijtuigenbelasting. Art. 1 lid 1 Wet MRB 1994 only taxes a personenauto, bestelauto, motorrijwiel, vrachtauto or autobus. A trailer only matters for a vrachtauto: art. 25a has a higher tariff for trucks with a koppelinrichting (tow coupling). Heavy trucks of 12,000 kg or more also pay the separate belasting zware motorrijtuigen (Eurovignet), which is out of scope for this library.
 
+### Upcoming changes
+- **2027 tariffs** are added once the law version of 1 January 2027 is on wetten.overheid.nl and CBS has the 2027 opcenten (see [CONTRIBUTING.md](CONTRIBUTING.md)). Art. 23b already sets the share that zero emission cars pay: 70% in 2027 and 2028, 75% in 2029.
+- **Betalen naar gebruik** (a per-kilometre charge) is planned around 2030 and may replace the motorrijtuigenbelasting for some or all vehicles. It is out of scope for this library until the law is final.
+
 ### Other
 Other vehicles types are being worked on in the following order:
 - Business Van

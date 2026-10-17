@@ -114,8 +114,20 @@ def motorcycle_zero_emission_factor(text: str) -> float:
     return fraction(match.group(1))
 
 
+def check_version(text: str, year: int) -> None:
+    """Tariffs are indexed every year, so a new year always has a version of the law
+    that starts on 1 January. Without it the page shows an older version."""
+    valid_from = re.search(r"Geldend van (\d{2}-\d{2}-\d{4})", text)
+    if not valid_from or valid_from.group(1) != f"01-01-{year}":
+        found = valid_from.group(1) if valid_from else "unknown"
+        raise ValueError(
+            f"No version of the law starting on 1 January {year} yet (found {found})"
+        )
+
+
 def parse_year(year: int) -> dict:
     text = law_text(year)
+    check_version(text, year)
     a23 = article(text, "23")
     lid1 = between(a23, " 1 Voor een personenauto", " 2 De belasting")
     lid3 = a23[a23.index(" 3 In afwijking") :]

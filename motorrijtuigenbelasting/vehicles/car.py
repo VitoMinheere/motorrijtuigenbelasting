@@ -1,6 +1,6 @@
 from ..tax_data import get_tax_value, rate_for_weight
 from .base import Vehicle
-from .constants import FIJNSTOFTOESLAG, MASSA_RIJKLAAR_OFFSET, OPCENTEN_BASE
+from .constants import MASSA_RIJKLAAR_OFFSET, OPCENTEN_BASE
 from .energy_source import EnergySource
 
 # Brandstoftoeslag table per energy source (art. 23 lid 2 and 3). Benzine and electric
@@ -50,7 +50,8 @@ class Car(Vehicle):
         tax += self.calculate_fuel_surcharge(year)
 
         if self.energy_source == EnergySource.DIESEL and self.diesel_particles:
-            tax *= 1 + FIJNSTOFTOESLAG
+            # Art. 23 lid 4, a percentage of the tax including brandstoftoeslag
+            tax *= 1 + get_tax_value(year, "car", "fijnstoftoeslag")
 
         return tax
 

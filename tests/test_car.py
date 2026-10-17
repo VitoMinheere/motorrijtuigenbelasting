@@ -122,6 +122,15 @@ class TestCarTotalTax(unittest.TestCase):
         with self.assertRaisesRegex(KeyError, "supported years"):
             car.calculate_total_tax(2010, PROVINCE)
 
+    def test_no_fijnstoftoeslag_before_2020(self):
+        """Wet MRB 1994 art. 23 lid 4 was added on 1 January 2020"""
+        clean = Car(weight=LIGHT_WEIGHT, energy_source=D)
+        dirty = Car(weight=LIGHT_WEIGHT, energy_source=D, diesel_particles=True)
+        self.assertEqual(
+            dirty.calculate_total_tax(2015, PROVINCE),
+            clean.calculate_total_tax(2015, PROVINCE),
+        )
+
     def test_lpg_is_not_an_alias_of_overige(self):
         self.assertIsNot(EnergySource.LPG, EnergySource.OVERIGE)
 

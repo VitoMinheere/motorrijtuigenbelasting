@@ -59,7 +59,8 @@ class TestMotorcycleTax(unittest.TestCase):
                         manufacturing_year=manufacturing_year,
                     )
                     self.assertEqual(
-                        motor.calculate_total_tax(year, province), expected
+                        motor.calculate_total_tax(year=year, province=province),
+                        expected,
                     )
 
     def test_kwarttarief_yearly(self):
@@ -67,7 +68,8 @@ class TestMotorcycleTax(unittest.TestCase):
         for year, expected in KWARTTARIEF_YEARLY.items():
             with self.subTest(year=year):
                 self.assertEqual(
-                    motor.calculate_yearly_tax(year, "gelderland"), expected
+                    motor.calculate_yearly_tax(year=year, province="gelderland"),
+                    expected,
                 )
 
     def test_opcenten(self):
@@ -75,18 +77,21 @@ class TestMotorcycleTax(unittest.TestCase):
         for year, expected in OPCENTEN.items():
             with self.subTest(year=year):
                 self.assertEqual(
-                    round(motor.calculate_opcenten("noord-holland", year), 2), expected
+                    round(
+                        motor.calculate_opcenten(province="noord-holland", year=year), 2
+                    ),
+                    expected,
                 )
 
     def test_unknown_province(self):
         motor = Motorcycle(weight=0, energy_source=B)
         with self.assertRaises(KeyError):
-            motor.calculate_opcenten("Non-existent", 2026)
+            motor.calculate_opcenten(province="Non-existent", year=2026)
 
     def test_weight_does_not_matter(self):
         light = Motorcycle(weight=0, energy_source=B)
         heavy = Motorcycle(weight=720, energy_source=B)
         self.assertEqual(
-            light.calculate_total_tax(2026, "gelderland"),
-            heavy.calculate_total_tax(2026, "gelderland"),
+            light.calculate_total_tax(year=2026, province="gelderland"),
+            heavy.calculate_total_tax(year=2026, province="gelderland"),
         )

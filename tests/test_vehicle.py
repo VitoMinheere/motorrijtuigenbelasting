@@ -1,7 +1,7 @@
 import datetime
 import unittest
 
-from motorrijtuigenbelasting import Car, EnergySource
+from motorrijtuigenbelasting import Car, EnergySource, Motorcycle
 from motorrijtuigenbelasting.tax_data import rate_for_weight, round_weight
 from motorrijtuigenbelasting.vehicles.base import anniversary, as_date
 
@@ -75,3 +75,37 @@ class TestDates(unittest.TestCase):
 
     def test_year_means_1_january(self):
         self.assertEqual(as_date(2026), datetime.date(2026, 1, 1))
+
+
+class TestArguments(unittest.TestCase):
+    def test_positional_arguments_are_deprecated(self):
+        car = Car(weight=1300, energy_source=EnergySource.BENZINE)
+        with self.assertWarns(DeprecationWarning):
+            total = car.calculate_total_tax(2026, "noord-holland")
+        self.assertEqual(
+            total, car.calculate_total_tax(year=2026, province="noord-holland")
+        )
+        # The old order of calculate_opcenten was (province, year)
+        with self.assertWarns(DeprecationWarning):
+            opcenten = car.calculate_opcenten("noord-holland", 2026)
+        self.assertEqual(
+            opcenten, car.calculate_opcenten(province="noord-holland", year=2026)
+        )
+
+    def test_energy_source_by_value(self):
+        car = Car(weight=1300, energy_source="diesel")
+        self.assertIs(car.energy_source, EnergySource.DIESEL)
+
+    def test_invalid_input(self):
+        for kwargs in (
+            {"weight": -1, "energy_source": EnergySource.BENZINE},
+            {"weight": "1300", "energy_source": EnergySource.BENZINE},
+            {"weight": True, "energy_source": EnergySource.BENZINE},
+            {"weight": 1300, "energy_source": "kerosine"},
+        ):
+            with self.subTest(**kwargs), self.assertRaises(ValueError):
+                Motorcycle(**kwargs)
+
+    def test_weight_may_have_decimals(self):
+        self.assertEqual(round_weight(1350.4), 1400)
+        self.assertEqual(round_weight(1350.0), 1300)

@@ -65,7 +65,7 @@ tax = car.calculate_total_tax(province=province, year=year)
 print(f"Tax per three months for your car: €{tax}")
 ```
 
-Provinces can be written as `"noord-holland"`, `"Noord-Holland"` or `"Noord Holland"`. The supported years and provinces are available as `motorrijtuigenbelasting.SUPPORTED_YEARS` and `motorrijtuigenbelasting.PROVINCES`.
+Provinces can be given as `Province.NOORD_HOLLAND`, `"noord-holland"`, `"Noord-Holland"` or `"Noord Holland"`. The supported years and provinces are available as `motorrijtuigenbelasting.SUPPORTED_YEARS` and `motorrijtuigenbelasting.PROVINCES`.
 
 `manufacturing_year` and `year` also accept a `datetime.date`. Pass the datum eerste toelating from the kentekenregister to get the oldtimer rule right: a car first admitted on 15 November 1986 is tax free from 15 November 2026, not from 1 January 2026. A plain year counts as 1 January.
 

@@ -1,7 +1,7 @@
 import datetime
 import unittest
 
-from motorrijtuigenbelasting import Car, EnergySource
+from motorrijtuigenbelasting import PROVINCES, Car, EnergySource, Province
 
 PROVINCE = "noord-holland"
 # Massa rijklaar, which is eigen massa + 100 kg
@@ -172,6 +172,14 @@ class TestCarTotalTax(unittest.TestCase):
         car = Car(weight=HEAVY_WEIGHT, energy_source=B)
         with self.assertRaises(KeyError):
             car.calculate_opcenten(province="Non-existent", year=2026)
+
+    def test_province_enum(self):
+        self.assertEqual(sorted(p.value for p in Province), PROVINCES)
+        car = Car(weight=HEAVY_WEIGHT, energy_source=B)
+        self.assertEqual(
+            car.calculate_total_tax(year=2026, province=Province.NOORD_HOLLAND),
+            car.calculate_total_tax(year=2026, province="noord-holland"),
+        )
 
     def test_province_name_is_normalised(self):
         car = Car(weight=HEAVY_WEIGHT, energy_source=B)

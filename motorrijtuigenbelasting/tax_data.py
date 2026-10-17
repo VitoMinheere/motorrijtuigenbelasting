@@ -7,6 +7,8 @@ import json
 import math
 from pathlib import Path
 
+from .province import Province
+
 with open(Path(__file__).parent / "data" / "tax_data.json", encoding="utf-8") as f:
     TAX_DATA = json.load(f)
 
@@ -30,7 +32,9 @@ def get_tax_value(year: int, category: str, key: str):
 
 
 def opcenten_percentage(year: int, province: str) -> float:
-    """Opcenten percentage of a province, e.g. "Noord-Holland" or "noord-holland"."""
+    """Opcenten percentage of a province, e.g. Province.NOORD_HOLLAND or "Noord-Holland"."""
+    if isinstance(province, Province):
+        province = province.value
     key = province.strip().lower().replace(" ", "-")
     try:
         return _year_data(year)["opcenten"][key]

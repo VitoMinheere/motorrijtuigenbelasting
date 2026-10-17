@@ -176,6 +176,12 @@ python -m unittest discover -s tests
 
 ---
 
+## Changelog  
+
+See [CHANGELOG.md](CHANGELOG.md). Version 0.2.0 changes the API: weights are massa rijklaar and `year`/`province` are keyword arguments.
+
+---
+
 ## License  
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.  

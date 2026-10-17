@@ -40,3 +40,11 @@ Every January the tariffs, opcenten and some percentages change. All of them liv
 - New percentages in art. 23b (zero emission), e.g. 70% in 2026–2028 and 75% in 2029.
 - Changes in what counts as massa rijklaar or eigen massa (see the README).
 - A law version that changes mid-year (wetten.overheid.nl shows "Geldend van ... t/m ..."). Compare both versions with the parser.
+
+## Releasing
+
+1. Update the version in `pyproject.toml` and add a section to `CHANGELOG.md`.
+2. Merge to `main`, then tag and push: `git tag v0.2.0 && git push origin v0.2.0`.
+3. The `Publish to PyPI` workflow checks that the tag matches the version, runs the tests, builds and publishes with PyPI trusted publishing.
+
+Trusted publishing needs a one-time setup on pypi.org: add this repository, workflow `publish.yaml` and environment `pypi` as a trusted publisher of the project.

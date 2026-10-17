@@ -1,7 +1,7 @@
 import datetime
 import unittest
 
-from motorrijtuigenbelasting import PROVINCES, Car, EnergySource, Province
+from motorrijtuigenbelasting import PROVINCES, Car, EnergySource, Province, TaxRule
 
 PROVINCE = "noord-holland"
 # Massa rijklaar, which is eigen massa + 100 kg
@@ -272,3 +272,42 @@ class TestCarYearlyTax(unittest.TestCase):
         self.assertEqual(
             car.calculate_total_tax(year=2026, province=PROVINCE), 158 // 4
         )
+
+
+class TestCarBreakdown(unittest.TestCase):
+    def test_diesel_with_particles(self):
+        car = Car(weight=LIGHT_WEIGHT, energy_source=D, diesel_particles=True)
+        breakdown = car.calculate_breakdown(year=2026, province=PROVINCE)
+        self.assertEqual(breakdown.rule, TaxRule.NORMAL)
+        self.assertEqual(breakdown.tariff_year, 2026)
+        self.assertAlmostEqual(breakdown.components["base"], 37.0)
+        self.assertAlmostEqual(breakdown.components["fuel_surcharge"], 115.03)
+        # Art. 23 lid 4: 19% of base + brandstoftoeslag
+        self.assertAlmostEqual(breakdown.components["fijnstoftoeslag"], 152.03 * 0.19)
+        self.assertAlmostEqual(breakdown.opcenten, 20.40 * 0.821)
+        self.assertEqual(breakdown.emission_factor, 1.0)
+        self.assertAlmostEqual(breakdown.unrounded, 152.03 * 1.19 + 20.40 * 0.821)
+        self.assertEqual(breakdown.per_three_months, 197)
+        self.assertEqual(breakdown.per_year, 4 * 197)
+
+    def test_electric_discount(self):
+        car = Car(weight=LIGHT_WEIGHT, energy_source=E)
+        breakdown = car.calculate_breakdown(year=2026, province=PROVINCE)
+        self.assertEqual(breakdown.emission_factor, 0.7)
+        self.assertEqual(breakdown.components["fuel_surcharge"], 0.0)
+
+    def test_kwarttarief_maximum(self):
+        car = Car(weight=3600, energy_source=B, manufacturing_year=1987)
+        breakdown = car.calculate_breakdown(year=2026, province=PROVINCE)
+        self.assertEqual(breakdown.rule, TaxRule.KWARTTARIEF)
+        self.assertEqual(breakdown.tariff_year, 2025)
+        self.assertEqual(breakdown.maximum, 158)
+        self.assertGreater(breakdown.unrounded, 158)
+        self.assertEqual(breakdown.per_year, 158)
+        self.assertEqual(breakdown.per_three_months, 158 // 4)
+
+    def test_oldtimer(self):
+        car = Car(weight=LIGHT_WEIGHT, energy_source=D, manufacturing_year=1980)
+        breakdown = car.calculate_breakdown(year=2026, province=PROVINCE)
+        self.assertEqual(breakdown.rule, TaxRule.OLDTIMER)
+        self.assertEqual((breakdown.per_three_months, breakdown.per_year), (0, 0))

@@ -4,6 +4,7 @@ import inspect
 import warnings
 from abc import ABC, abstractmethod
 
+from ..breakdown import TaxBreakdown, TaxRule
 from ..tax_data import (
     get_tax_value,
     opcenten_percentage,
@@ -120,8 +121,12 @@ class Vehicle(ABC):
         return self.first_admission.year
 
     @abstractmethod
+    def tax_components(self, year: int) -> dict[str, float]:
+        """Parts of the hoofdsom by name, according to the tariff of the given year."""
+
     def calculate_base_tax(self, year: int) -> float:
         """Hoofdsom: the tax according to the tariff of the given year, before discounts."""
+        return sum(self.tax_components(year).values())
 
     @abstractmethod
     def opcenten_base(self) -> float:
@@ -154,6 +159,63 @@ class Vehicle(ABC):
         return tax * self.emission_factor(tariff_year)
 
     @keyword_only
+    def calculate_breakdown(self, *, year: Moment, province: str) -> TaxBreakdown:
+        """
+        Calculate the tax and how it is built up.
+
+        Args:
+            year (int | date): Year, or the start of the three months, to calculate.
+            province (str): Province where the vehicle is registered.
+        """
+        tax_year = as_date(year).year
+        if self.is_kwarttarief(year):
+            rule, tariff_year = TaxRule.KWARTTARIEF, tax_year - 1
+        elif self.is_historic(year):
+            return TaxBreakdown(
+                year=tax_year,
+                tariff_year=tax_year,
+                rule=TaxRule.OLDTIMER,
+                components={},
+                opcenten=0.0,
+                emission_factor=1.0,
+                maximum=None,
+                per_three_months=0,
+                per_year=0,
+            )
+        else:
+            rule, tariff_year = TaxRule.NORMAL, tax_year
+
+        components = self.tax_components(tariff_year)
+        opcenten = self.calculate_opcenten(province=province, year=tax_year)
+        factor = self.emission_factor(tariff_year)
+        unrounded = (sum(components.values()) + opcenten) * factor
+
+        # Belastingdienst always rounds down to a whole number (Wet MRB 1994 art. 82)
+        maximum = None
+        if rule == TaxRule.KWARTTARIEF:
+            # Art. 84a: with the kwarttarief the tijdvak is a calendar year and the tax
+            # is the quarterly tariff as it was on 31 December of the previous year,
+            # including this year's opcenten, up to a maximum.
+            maximum = get_tax_value(tax_year, "kwarttarief", "value")
+            per_year = round_down(min(unrounded, maximum))
+            per_three_months = per_year // 4
+        else:
+            per_three_months = round_down(unrounded)
+            per_year = 4 * per_three_months
+
+        return TaxBreakdown(
+            year=tax_year,
+            tariff_year=tariff_year,
+            rule=rule,
+            components=components,
+            opcenten=opcenten,
+            emission_factor=factor,
+            maximum=maximum,
+            per_three_months=per_three_months,
+            per_year=per_year,
+        )
+
+    @keyword_only
     def calculate_total_tax(self, *, year: Moment, province: str) -> int:
         """
         Calculate the tax due per three months, rounded down to whole euros.
@@ -168,36 +230,12 @@ class Vehicle(ABC):
         Returns:
             int: Total tax amount.
         """
-        if self.is_kwarttarief(year):
-            return self.calculate_yearly_tax(year=year, province=province) // 4
-        if self.is_historic(year):
-            return 0
-
-        # Belastingdienst always rounds down to a whole number (Wet MRB 1994 art. 82)
-        return round_down(
-            self.calculate_quarterly_tax(year=as_date(year).year, province=province)
-        )
+        return self.calculate_breakdown(year=year, province=province).per_three_months
 
     @keyword_only
     def calculate_yearly_tax(self, *, year: Moment, province: str) -> int:
-        """
-        Calculate the tax due for a whole year, rounded down to whole euros.
-
-        Wet MRB 1994 art. 84a: with the kwarttarief the tijdvak is a calendar year and
-        the tax is the quarterly tariff as it was on 31 December of the previous year,
-        including this year's opcenten, up to a maximum.
-        """
-        if self.is_kwarttarief(year):
-            tax_year = as_date(year).year
-            return round_down(
-                min(
-                    self.calculate_quarterly_tax(
-                        year=tax_year, province=province, tariff_year=tax_year - 1
-                    ),
-                    get_tax_value(tax_year, "kwarttarief", "value"),
-                )
-            )
-        return 4 * self.calculate_total_tax(year=year, province=province)
+        """Calculate the tax due for a whole year, rounded down to whole euros."""
+        return self.calculate_breakdown(year=year, province=province).per_year
 
     def is_historic(self, year: Moment) -> bool:
         """Oldtimer ruling applies when vehicle was taken into use 40 or more years ago"""

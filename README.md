@@ -69,6 +69,16 @@ Provinces can be given as `Province.NOORD_HOLLAND`, `"noord-holland"`, `"Noord-H
 
 `manufacturing_year` and `year` also accept a `datetime.date`. Pass the datum eerste toelating from the kentekenregister to get the oldtimer rule right: a car first admitted on 15 November 1986 is tax free from 15 November 2026, not from 1 January 2026. A plain year counts as 1 January.
 
+To see how the amount is built up, use `calculate_breakdown`:
+
+```python
+breakdown = car.calculate_breakdown(year=2026, province="noord-holland")
+breakdown.components      # {"base": 116.05, "fuel_surcharge": 0.0}
+breakdown.opcenten        # 56.79
+breakdown.rule            # TaxRule.NORMAL, KWARTTARIEF or OLDTIMER
+breakdown.per_three_months, breakdown.per_year
+```
+
 Use `calculate_yearly_tax` for the amount per year. For most vehicles that is four times the amount per three months. With the kwarttarief you pay once per year, so `calculate_total_tax` returns a quarter of the yearly amount, rounded down.
 
 ### Weight: massa rijklaar  

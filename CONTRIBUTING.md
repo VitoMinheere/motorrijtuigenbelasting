@@ -33,7 +33,8 @@ Every January the tariffs, opcenten and some percentages change. All of them liv
    - Run `python scripts/add_year.py --check 2027` and `python scripts/check_opcenten.py`.
    - Run the tests. If a table changed by more than the tabelcorrectiefactor, find out why in the law and add it to `OTHER_CHANGES` with an explanation.
 4. **Add test cases** for the new year to `TOTAL_TAX` in `tests/test_car.py` and `tests/test_motorcycle.py`. Check at least a few with the Belastingdienst calculator ("Motorrijtuigenbelasting berekenen" on belastingdienst.nl), and say which ones in a comment.
-5. **Update the README** year range.
+5. **Regenerate the example output** with `python scripts/generate_output.py benzine`. A test fails when `output/benzine.json` is out of date.
+6. **Update the README** year range.
 
 ### Things to look out for
 - New percentages in art. 23b (zero emission), e.g. 70% in 2026–2028 and 75% in 2029.

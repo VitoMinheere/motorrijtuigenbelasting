@@ -26,7 +26,8 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
-dev = ["ruff", "black"]
+# Pinned so local runs and CI agree, update them together
+dev = ["ruff==0.17.1", "black==26.10.1", "mypy==2.4.0", "coverage==7.16.2"]
 
 [project.scripts]
 mrb = "motorrijtuigenbelasting.__main__:main"
@@ -43,3 +44,14 @@ motorrijtuigenbelasting = ["data/*.json"]
 
 [tool.ruff]
 target-version = "py310"
+
+[tool.mypy]
+python_version = "3.10"
+files = ["motorrijtuigenbelasting"]
+
+[tool.coverage.run]
+source = ["motorrijtuigenbelasting"]
+
+[tool.coverage.report]
+fail_under = 90
+show_missing = true

@@ -6,7 +6,7 @@ Example: python -m motorrijtuigenbelasting --weight 1300 --fuel benzine --provin
 import argparse
 import datetime
 
-from . import PROVINCES, Car, EnergySource, Motorcycle
+from . import PROVINCES, Car, EnergySource, Motorcycle, from_kenteken
 from .vehicles.base import Moment
 
 VEHICLES = {"car": Car, "motorcycle": Motorcycle}
@@ -28,6 +28,10 @@ def parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="mrb",
         description="Calculate the Dutch motorrijtuigenbelasting.",
+    )
+    parser.add_argument(
+        "--kenteken",
+        help="look up the vehicle in the RDW open data, instead of the options below",
     )
     parser.add_argument("--vehicle", choices=VEHICLES, default="car")
     parser.add_argument(
@@ -94,12 +98,12 @@ def build_vehicle(args: argparse.Namespace):
 def main(argv: list[str] | None = None) -> int:
     arguments = parser()
     args = arguments.parse_args(argv)
-    if args.vehicle == "car" and args.weight is None:
+    if not args.kenteken and args.vehicle == "car" and args.weight is None:
         arguments.error("--weight is required for a car")
     try:
-        vehicle = build_vehicle(args)
+        vehicle = from_kenteken(args.kenteken) if args.kenteken else build_vehicle(args)
         breakdown = vehicle.calculate_breakdown(year=args.year, province=args.province)
-    except (KeyError, ValueError) as error:
+    except (KeyError, ValueError, NotImplementedError, OSError) as error:
         arguments.error(error.args[0] if error.args else str(error))
 
     if args.breakdown:

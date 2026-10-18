@@ -1,6 +1,7 @@
 from .breakdown import TaxBreakdown as TaxBreakdown
 from .breakdown import TaxRule as TaxRule
 from .province import Province as Province
+from .rdw import from_kenteken as from_kenteken
 from .tax_data import PROVINCES as PROVINCES
 from .tax_data import SUPPORTED_YEARS as SUPPORTED_YEARS
 from .vehicles import EnergySource as EnergySource

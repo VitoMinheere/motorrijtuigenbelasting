@@ -32,9 +32,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install .[dev]
 
-      # Step 4: Run tests
-      - name: Run unittest
-        run: python -m unittest discover -s tests
+      # Step 4: Run tests and fail when coverage drops below the minimum
+      - name: Run unittest with coverage
+        run: |
+          coverage run -m unittest discover -s tests
+          coverage report
 
       # Step 5: Check linting, without fixing so problems fail the build
       - name: Run Ruff
@@ -43,3 +45,7 @@ jobs:
       # Step 6: Check code style with black
       - name: Check code formatting with Black
         run: black --check .
+
+      # Step 7: Check types
+      - name: Run mypy
+        run: mypy

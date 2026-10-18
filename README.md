@@ -1,57 +1,69 @@
-# Motorrijtuigenbelasting: Dutch Road Tax Calculator  
+# Motorrijtuigenbelasting: Dutch Road Tax Calculator
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)  
-![Python](https://img.shields.io/badge/Python-3.10%2B-brightgreen)  
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Python](https://img.shields.io/badge/Python-3.10%2B-brightgreen)
 
 Motorrijtuigenbelasting is a Python library designed to calculate Dutch road taxes (motorrijtuigenbelasting, MRB) for passenger cars, motorcycles, and other vehicle types. It provides tools for determining taxes based on weight, fuel type, and provincial rates for 2014 to 2026. Rates are taken from the Wet op de motorrijtuigenbelasting 1994 as it applied on 1 January of each year, and the provincial opcenten from CBS StatLine table [80889ned](https://opendata.cbs.nl/statline/#/CBS/nl/dataset/80889ned/table).
 
-## Features  
+## Motivation
 
-- Support for multiple energy sources (benzine, diesel, LPG, electric, etc.)  
-- Handles tax calculations based on weight brackets and provincial multipliers.  
-- Adjustable tax parameters for future tax years.  
-- Lightweight and extensible for different vehicle types like cars and motorcycles.  
+Every year the motorrijttuigenbelasting changes and it usually goes up. The Belastindienst has a tool on their site to check the tax for a certain vehicle weight and fuel but it does not show how they got to that number. I wanted 3 thins:
+- To be able to understand what is included in that tax
+- A way to quickly check multiple vehicles instead of going back and forth on
+  the Belastingdienst website
+- A way to track the changes in road tax over the years
 
----
+I did some research in how the tax is calculated and tried to find all the parameters to be able to calculate the taxes from 2014 up until the current year.
 
-## Table of Contents  
 
-1. [Installation](#installation)  
-2. [Usage](#usage)  
-   - [Example](#example)  
-   - [Look up a kenteken](#look-up-a-kenteken)  
-   - [Command line](#command-line)  
-   - [Weight: massa rijklaar](#weight-massa-rijklaar)  
-3. [Supported Vehicle Types](#supported-vehicle-types)  
-4. [Contributing](#contributing)  
-5. [License](#license)  
+
+## Features
+
+- Support for multiple energy sources (benzine, diesel, LPG, electric, etc.)
+- Handles tax calculations based on weight brackets and provincial multipliers.
+- Adjustable tax parameters for future tax years.
+- Lightweight and extensible for different vehicle types like cars and motorcycles.
 
 ---
 
-## Installation  
+## Table of Contents
 
-### Requirements  
-- Python 3.10 or higher.  
+1. [Quick Start](#quick-start)
+2. [Usage](#usage)
+   - [Example](#example)
+   - [Look up a kenteken](#look-up-a-kenteken)
+   - [Command line](#command-line)
+   - [Weight: massa rijklaar](#weight-massa-rijklaar)
+3. [Supported Vehicle Types](#supported-vehicle-types)
+4. [Contributing](#contributing)
+5. [License](#license)
+
+---
+
+## Quick Start
+
+### Requirements
+- Python 3.10 or higher.
 
 ```bash
 pip install motorrijtuigenbelasting
 ```
 
-or clone the repository and install it in editable mode with the development tools:  
+or clone the repository and install it in editable mode with the development tools:
 
 ```bash
-git clone https://github.com/VitoMinheere/motorrijtuigenbelasting.git  
+git clone https://github.com/VitoMinheere/motorrijtuigenbelasting.git
 cd motorrijtuigenbelasting
 pip install -e .[dev]
 ```
 
 ---
 
-## Usage  
+## Usage
 
-### Example  
+### Example
 
-Here’s how to use MRB-Py to calculate road tax for a passenger car:  
+Here’s how to use MRB-Py to calculate road tax for a passenger car:
 
 ```python
 from motorrijtuigenbelasting import Car, EnergySource
@@ -83,7 +95,7 @@ breakdown.per_three_months, breakdown.per_year
 
 Use `calculate_yearly_tax` for the amount per year. For most vehicles that is four times the amount per three months. With the kwarttarief you pay once per year, so `calculate_total_tax` returns a quarter of the yearly amount, rounded down.
 
-### Look up a kenteken  
+### Look up a kenteken
 
 `from_kenteken` reads the weight, fuel, first admission date, CO2 emission and particle emission from the [RDW open data](https://opendata.rdw.nl) (no API key needed) and returns a `Car` or `Motorcycle`:
 
@@ -96,7 +108,7 @@ car.calculate_total_tax(year=2025, province="utrecht")
 
 Plug-in hybrids count as their combustion fuel, and CO2 decides the low emission discount. LPG cars with a G3 or R115 installation in the RDW "toegevoegde objecten" get the G3 surcharge. A factory-fitted installation may not be listed there, so you can override the fuel with `from_kenteken(..., energy_source=EnergySource.LPG_G3)` or `mrb --kenteken ... --fuel lpg_g3`. Vans, trucks and campers raise `NotImplementedError` for now.
 
-### Command line  
+### Command line
 
 After installing, the `mrb` command (or `python -m motorrijtuigenbelasting`) calculates the tax without writing code:
 
@@ -111,7 +123,7 @@ mrb --kenteken P-803-KL --province utrecht
 
 Run `mrb --help` for all options.
 
-### Weight: massa rijklaar  
+### Weight: massa rijklaar
 
 `Car(weight=...)` expects the **massa rijklaar** in kg, as shown in the RDW kentekenregister and asked for by the Belastingdienst calculator.
 
@@ -123,10 +135,10 @@ If you only know the eigen massa, add 100 kg before passing it in.
 
 ---
 
-## Supported Vehicle Types  
+## Supported Vehicle Types
 
-### Passenger Cars  
-Supports fuel types like benzine, diesel, LPG, LPG G3, electric and hydrogen (waterstof) vehicles.  
+### Passenger Cars
+Supports fuel types like benzine, diesel, LPG, LPG G3, electric and hydrogen (waterstof) vehicles.
 
 ### Oldtimer & kwarttarief ruling
 Vehicles taken into use 40 or more years ago pay no tax. Vehicles taken into use before 1988 that are not yet 40 years old can use the kwarttarief (art. 84a): once per year the quarterly tariff of the previous year including opcenten, up to a maximum. For cars this only applies to benzine.
@@ -149,14 +161,14 @@ Other vehicles types are being worked on in the following order:
 
 ---
 
-## Contributing  
+## Contributing
 
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for the development setup and how to add a new tax year. In short:  
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for the development setup and how to add a new tax year. In short:
 
-1. Fork the repository.  
-2. Create a new branch for your feature or bugfix.  
-3. Write clear code and include tests.  
-4. Submit a pull request with a detailed description of your changes.  
+1. Fork the repository.
+2. Create a new branch for your feature or bugfix.
+3. Write clear code and include tests.
+4. Submit a pull request with a detailed description of your changes.
 
 ### Issues and Feature Requests
 
@@ -166,9 +178,9 @@ Found a bug or have an idea for a new feature? We’d love to hear from you!
     - Click New Issue.
     - Provide a detailed description, including steps to reproduce the issue or a clear explanation of your feature idea.
 
-### Running Tests  
+### Running Tests
 
-Use `unittest` to run tests:  
+Use `unittest` to run tests:
 
 ```bash
 python -m unittest discover -s tests
@@ -176,22 +188,22 @@ python -m unittest discover -s tests
 
 ---
 
-## Changelog  
+## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md). Version 0.2.0 changes the API: weights are massa rijklaar and `year`/`province` are keyword arguments.
 
 ---
 
-## License  
+## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.  
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
-## Contact  
+## Contact
 
-Feel free to reach out for support or feedback:  
+Feel free to reach out for support or feedback:
 - [VitoMinheere.com](https://vitominheere.com)
-- [GitHub Profile](https://github.com/VitoMinheere)  
-- [LinkedIn Profile](https://linkedin.com/in/vitominheere)  
+- [GitHub Profile](https://github.com/VitoMinheere)
+- [LinkedIn Profile](https://linkedin.com/in/vitominheere)
 

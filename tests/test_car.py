@@ -1,7 +1,7 @@
 import datetime
 import unittest
 
-from motorrijtuigenbelasting import Car, EnergySource
+from motorrijtuigenbelasting import PROVINCES, Car, EnergySource, Province, TaxRule
 
 PROVINCE = "noord-holland"
 # Massa rijklaar, which is eigen massa + 100 kg
@@ -156,38 +156,50 @@ class TestCarTotalTax(unittest.TestCase):
                     year=year, weight=weight, energy_source=energy_source, **kwargs
                 ):
                     car = Car(weight=weight, energy_source=energy_source, **kwargs)
-                    self.assertEqual(car.calculate_total_tax(year, PROVINCE), expected)
+                    self.assertEqual(
+                        car.calculate_total_tax(year=year, province=PROVINCE), expected
+                    )
 
     def test_opcenten(self):
         car = Car(weight=HEAVY_WEIGHT, energy_source=B)
         for year, expected in OPCENTEN.items():
             with self.subTest(year=year):
-                self.assertEqual(int(car.calculate_opcenten(PROVINCE, year)), expected)
+                self.assertEqual(
+                    int(car.calculate_opcenten(province=PROVINCE, year=year)), expected
+                )
 
     def test_unknown_province(self):
         car = Car(weight=HEAVY_WEIGHT, energy_source=B)
         with self.assertRaises(KeyError):
-            car.calculate_opcenten("Non-existent", 2026)
+            car.calculate_opcenten(province="Non-existent", year=2026)
+
+    def test_province_enum(self):
+        self.assertEqual(sorted(p.value for p in Province), PROVINCES)
+        car = Car(weight=HEAVY_WEIGHT, energy_source=B)
+        self.assertEqual(
+            car.calculate_total_tax(year=2026, province=Province.NOORD_HOLLAND),
+            car.calculate_total_tax(year=2026, province="noord-holland"),
+        )
 
     def test_province_name_is_normalised(self):
         car = Car(weight=HEAVY_WEIGHT, energy_source=B)
         self.assertEqual(
-            car.calculate_total_tax(2026, "Noord Holland"),
-            car.calculate_total_tax(2026, "noord-holland"),
+            car.calculate_total_tax(year=2026, province="Noord Holland"),
+            car.calculate_total_tax(year=2026, province="noord-holland"),
         )
 
     def test_unsupported_year(self):
         car = Car(weight=HEAVY_WEIGHT, energy_source=B)
         with self.assertRaisesRegex(KeyError, "supported years"):
-            car.calculate_total_tax(2010, PROVINCE)
+            car.calculate_total_tax(year=2010, province=PROVINCE)
 
     def test_no_fijnstoftoeslag_before_2020(self):
         """Wet MRB 1994 art. 23 lid 4 was added on 1 January 2020"""
         clean = Car(weight=LIGHT_WEIGHT, energy_source=D)
         dirty = Car(weight=LIGHT_WEIGHT, energy_source=D, diesel_particles=True)
         self.assertEqual(
-            dirty.calculate_total_tax(2015, PROVINCE),
-            clean.calculate_total_tax(2015, PROVINCE),
+            dirty.calculate_total_tax(year=2015, province=PROVINCE),
+            clean.calculate_total_tax(year=2015, province=PROVINCE),
         )
 
     def test_hydrogen_is_taxed_like_electric(self):
@@ -198,8 +210,8 @@ class TestCarTotalTax(unittest.TestCase):
                     hydrogen = Car(weight=weight, energy_source=EnergySource.WATERSTOF)
                     electric = Car(weight=weight, energy_source=E)
                     self.assertEqual(
-                        hydrogen.calculate_total_tax(year, PROVINCE),
-                        electric.calculate_total_tax(year, PROVINCE),
+                        hydrogen.calculate_total_tax(year=year, province=PROVINCE),
+                        electric.calculate_total_tax(year=year, province=PROVINCE),
                     )
 
     def test_oldtimer_from_the_day_it_turns_40(self):
@@ -211,14 +223,18 @@ class TestCarTotalTax(unittest.TestCase):
         )
         self.assertEqual(car.manufacturing_year, 1986)
         self.assertEqual(
-            car.calculate_total_tax(datetime.date(2026, 10, 1), PROVINCE), 168
+            car.calculate_total_tax(year=datetime.date(2026, 10, 1), province=PROVINCE),
+            168,
         )
         self.assertEqual(
-            car.calculate_total_tax(datetime.date(2026, 11, 15), PROVINCE), 0
+            car.calculate_total_tax(
+                year=datetime.date(2026, 11, 15), province=PROVINCE
+            ),
+            0,
         )
         # A year still means 1 January
-        self.assertEqual(car.calculate_total_tax(2026, PROVINCE), 168)
-        self.assertEqual(car.calculate_total_tax(2027, PROVINCE), 0)
+        self.assertEqual(car.calculate_total_tax(year=2026, province=PROVINCE), 168)
+        self.assertEqual(car.calculate_total_tax(year=2027, province=PROVINCE), 0)
 
     def test_kwarttarief_needs_admission_before_1988(self):
         late = Car(LIGHT_WEIGHT, B, manufacturing_year=datetime.date(1987, 12, 31))
@@ -233,7 +249,7 @@ class TestCarTotalTax(unittest.TestCase):
 class TestCarYearlyTax(unittest.TestCase):
     def test_regular_car_pays_four_quarters(self):
         car = Car(weight=LIGHT_WEIGHT, energy_source=B)
-        self.assertEqual(car.calculate_yearly_tax(2026, PROVINCE), 4 * 53)
+        self.assertEqual(car.calculate_yearly_tax(year=2026, province=PROVINCE), 4 * 53)
 
     def test_kwarttarief_uses_previous_year_tariff(self):
         """Wet MRB 1994 art. 84a: one quarter of last year's tariff, paid per year"""
@@ -246,9 +262,52 @@ class TestCarYearlyTax(unittest.TestCase):
             2026: 52,
         }.items():
             with self.subTest(year=year):
-                self.assertEqual(car.calculate_yearly_tax(year, PROVINCE), expected)
+                self.assertEqual(
+                    car.calculate_yearly_tax(year=year, province=PROVINCE), expected
+                )
 
     def test_kwarttarief_maximum(self):
         car = Car(weight=3600, energy_source=B, manufacturing_year=1987)
-        self.assertEqual(car.calculate_yearly_tax(2026, PROVINCE), 158)
-        self.assertEqual(car.calculate_total_tax(2026, PROVINCE), 158 // 4)
+        self.assertEqual(car.calculate_yearly_tax(year=2026, province=PROVINCE), 158)
+        self.assertEqual(
+            car.calculate_total_tax(year=2026, province=PROVINCE), 158 // 4
+        )
+
+
+class TestCarBreakdown(unittest.TestCase):
+    def test_diesel_with_particles(self):
+        car = Car(weight=LIGHT_WEIGHT, energy_source=D, diesel_particles=True)
+        breakdown = car.calculate_breakdown(year=2026, province=PROVINCE)
+        self.assertEqual(breakdown.rule, TaxRule.NORMAL)
+        self.assertEqual(breakdown.tariff_year, 2026)
+        self.assertAlmostEqual(breakdown.components["base"], 37.0)
+        self.assertAlmostEqual(breakdown.components["fuel_surcharge"], 115.03)
+        # Art. 23 lid 4: 19% of base + brandstoftoeslag
+        self.assertAlmostEqual(breakdown.components["fijnstoftoeslag"], 152.03 * 0.19)
+        self.assertAlmostEqual(breakdown.opcenten, 20.40 * 0.821)
+        self.assertEqual(breakdown.emission_factor, 1.0)
+        self.assertAlmostEqual(breakdown.unrounded, 152.03 * 1.19 + 20.40 * 0.821)
+        self.assertEqual(breakdown.per_three_months, 197)
+        self.assertEqual(breakdown.per_year, 4 * 197)
+
+    def test_electric_discount(self):
+        car = Car(weight=LIGHT_WEIGHT, energy_source=E)
+        breakdown = car.calculate_breakdown(year=2026, province=PROVINCE)
+        self.assertEqual(breakdown.emission_factor, 0.7)
+        self.assertEqual(breakdown.components["fuel_surcharge"], 0.0)
+
+    def test_kwarttarief_maximum(self):
+        car = Car(weight=3600, energy_source=B, manufacturing_year=1987)
+        breakdown = car.calculate_breakdown(year=2026, province=PROVINCE)
+        self.assertEqual(breakdown.rule, TaxRule.KWARTTARIEF)
+        self.assertEqual(breakdown.tariff_year, 2025)
+        self.assertEqual(breakdown.maximum, 158)
+        self.assertGreater(breakdown.unrounded, 158)
+        self.assertEqual(breakdown.per_year, 158)
+        self.assertEqual(breakdown.per_three_months, 158 // 4)
+
+    def test_oldtimer(self):
+        car = Car(weight=LIGHT_WEIGHT, energy_source=D, manufacturing_year=1980)
+        breakdown = car.calculate_breakdown(year=2026, province=PROVINCE)
+        self.assertEqual(breakdown.rule, TaxRule.OLDTIMER)
+        self.assertEqual((breakdown.per_three_months, breakdown.per_year), (0, 0))

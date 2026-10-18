@@ -41,19 +41,21 @@ class Car(Vehicle):
         self.low_co2_emissions = co2_emissions
         self.diesel_particles = diesel_particles
 
-    def calculate_base_tax(self, year: int) -> float:
+    def tax_components(self, year: int) -> dict[str, float]:
         """
         Hoofdsom: weight based tax plus brandstoftoeslag and fijnstoftoeslag.
         source: https://wetten.overheid.nl/jci1.3:c:BWBR0006324&hoofdstuk=IV&afdeling=2&artikel=23&z=2026-01-01&g=2026-01-01
         """
-        tax = self.rate_for_weight(get_tax_value(year, "car", "base"))
-        tax += self.calculate_fuel_surcharge(year)
-
+        components = {
+            "base": self.rate_for_weight(get_tax_value(year, "car", "base")),
+            "fuel_surcharge": self.calculate_fuel_surcharge(year),
+        }
         if self.energy_source == EnergySource.DIESEL and self.diesel_particles:
             # Art. 23 lid 4, a percentage of the tax including brandstoftoeslag
-            tax *= 1 + get_tax_value(year, "car", "fijnstoftoeslag")
-
-        return tax
+            components["fijnstoftoeslag"] = sum(components.values()) * get_tax_value(
+                year, "car", "fijnstoftoeslag"
+            )
+        return components
 
     def calculate_fuel_surcharge(self, year: int) -> float:
         """Brandstoftoeslag (art. 23 lid 2 and 3). Benzine, electric and hydrogen cars pay none."""

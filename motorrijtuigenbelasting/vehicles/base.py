@@ -1,6 +1,10 @@
 import datetime
+import functools
+import inspect
+import warnings
 from abc import ABC, abstractmethod
 
+from ..breakdown import TaxBreakdown, TaxRule
 from ..tax_data import (
     get_tax_value,
     opcenten_percentage,
@@ -25,6 +29,34 @@ def as_date(moment: Moment) -> datetime.date:
     if isinstance(moment, datetime.date):
         return moment
     return datetime.date(moment, 1, 1)
+
+
+def keyword_only(method):
+    """Accept the keyword-only arguments positionally, with a DeprecationWarning.
+
+    The positional order is the order of the keyword-only parameters, which matches
+    the old signatures, e.g. calculate_opcenten(province, year).
+    """
+    names = [
+        name
+        for name, parameter in inspect.signature(method).parameters.items()
+        if parameter.kind == inspect.Parameter.KEYWORD_ONLY
+    ]
+
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        if args:
+            passed = names[: len(args)]
+            warnings.warn(
+                f"Pass {', '.join(passed)} to {method.__name__}() as keyword "
+                "arguments, positional arguments will stop working in a later release",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            kwargs.update(zip(passed, args))
+        return method(self, **kwargs)
+
+    return wrapper
 
 
 def anniversary(start: datetime.date, years: int) -> datetime.date:
@@ -63,12 +95,21 @@ class Vehicle(ABC):
 
     def __init__(
         self,
-        weight: int,
-        energy_source: EnergySource,
+        weight: float,
+        energy_source: EnergySource | str,
         manufacturing_year: Moment | None = None,
     ):
+        if (
+            isinstance(weight, bool)
+            or not isinstance(weight, int | float)
+            or weight < 0
+        ):
+            raise ValueError(
+                f"weight must be a number of kg of 0 or more, got {weight!r}"
+            )
         self.rounded_weight = round_weight(weight)
-        self.energy_source = energy_source
+        # Also accepts the value, e.g. "benzine", and raises ValueError for unknown ones
+        self.energy_source = EnergySource(energy_source)
         self.first_admission = (
             as_date(manufacturing_year)
             if manufacturing_year is not None
@@ -80,14 +121,19 @@ class Vehicle(ABC):
         return self.first_admission.year
 
     @abstractmethod
+    def tax_components(self, year: int) -> dict[str, float]:
+        """Parts of the hoofdsom by name, according to the tariff of the given year."""
+
     def calculate_base_tax(self, year: int) -> float:
         """Hoofdsom: the tax according to the tariff of the given year, before discounts."""
+        return sum(self.tax_components(year).values())
 
     @abstractmethod
     def opcenten_base(self) -> float:
         """Fixed amount the provincial opcenten percentage is applied to."""
 
-    def calculate_opcenten(self, province: str, year: int) -> float:
+    @keyword_only
+    def calculate_opcenten(self, *, province: str, year: int) -> float:
         """Provincial opcenten for the given province and year (Provinciewet art. 222)."""
         return self.opcenten_base() * opcenten_percentage(year, province) / 100
 
@@ -97,8 +143,9 @@ class Vehicle(ABC):
             return get_tax_value(year, self.TAX_CATEGORY, "zero_emission_factor")
         return 1.0
 
+    @keyword_only
     def calculate_quarterly_tax(
-        self, year: int, province: str, tariff_year: int | None = None
+        self, *, year: int, province: str, tariff_year: int | None = None
     ) -> float:
         """
         Unrounded hoofdsom plus opcenten of `year`, after discounts.
@@ -107,11 +154,69 @@ class Vehicle(ABC):
         """
         tariff_year = year if tariff_year is None else tariff_year
         tax = self.calculate_base_tax(tariff_year) + self.calculate_opcenten(
-            province, year
+            province=province, year=year
         )
         return tax * self.emission_factor(tariff_year)
 
-    def calculate_total_tax(self, year: Moment, province: str) -> int:
+    @keyword_only
+    def calculate_breakdown(self, *, year: Moment, province: str) -> TaxBreakdown:
+        """
+        Calculate the tax and how it is built up.
+
+        Args:
+            year (int | date): Year, or the start of the three months, to calculate.
+            province (str): Province where the vehicle is registered.
+        """
+        tax_year = as_date(year).year
+        if self.is_kwarttarief(year):
+            rule, tariff_year = TaxRule.KWARTTARIEF, tax_year - 1
+        elif self.is_historic(year):
+            return TaxBreakdown(
+                year=tax_year,
+                tariff_year=tax_year,
+                rule=TaxRule.OLDTIMER,
+                components={},
+                opcenten=0.0,
+                emission_factor=1.0,
+                maximum=None,
+                per_three_months=0,
+                per_year=0,
+            )
+        else:
+            rule, tariff_year = TaxRule.NORMAL, tax_year
+
+        components = self.tax_components(tariff_year)
+        opcenten = self.calculate_opcenten(province=province, year=tax_year)
+        factor = self.emission_factor(tariff_year)
+        unrounded = (sum(components.values()) + opcenten) * factor
+
+        # Belastingdienst always rounds down to a whole number (Wet MRB 1994 art. 82)
+        maximum = None
+        if rule == TaxRule.KWARTTARIEF:
+            # Art. 84a: with the kwarttarief the tijdvak is a calendar year and the tax
+            # is the quarterly tariff as it was on 31 December of the previous year,
+            # including this year's opcenten, up to a maximum.
+            maximum = get_tax_value(tax_year, "kwarttarief", "value")
+            per_year = round_down(min(unrounded, maximum))
+            per_three_months = per_year // 4
+        else:
+            per_three_months = round_down(unrounded)
+            per_year = 4 * per_three_months
+
+        return TaxBreakdown(
+            year=tax_year,
+            tariff_year=tariff_year,
+            rule=rule,
+            components=components,
+            opcenten=opcenten,
+            emission_factor=factor,
+            maximum=maximum,
+            per_three_months=per_three_months,
+            per_year=per_year,
+        )
+
+    @keyword_only
+    def calculate_total_tax(self, *, year: Moment, province: str) -> int:
         """
         Calculate the tax due per three months, rounded down to whole euros.
 
@@ -125,33 +230,12 @@ class Vehicle(ABC):
         Returns:
             int: Total tax amount.
         """
-        if self.is_kwarttarief(year):
-            return self.calculate_yearly_tax(year, province) // 4
-        if self.is_historic(year):
-            return 0
+        return self.calculate_breakdown(year=year, province=province).per_three_months
 
-        # Belastingdienst always rounds down to a whole number (Wet MRB 1994 art. 82)
-        return round_down(self.calculate_quarterly_tax(as_date(year).year, province))
-
-    def calculate_yearly_tax(self, year: Moment, province: str) -> int:
-        """
-        Calculate the tax due for a whole year, rounded down to whole euros.
-
-        Wet MRB 1994 art. 84a: with the kwarttarief the tijdvak is a calendar year and
-        the tax is the quarterly tariff as it was on 31 December of the previous year,
-        including this year's opcenten, up to a maximum.
-        """
-        if self.is_kwarttarief(year):
-            tax_year = as_date(year).year
-            return round_down(
-                min(
-                    self.calculate_quarterly_tax(
-                        tax_year, province, tariff_year=tax_year - 1
-                    ),
-                    get_tax_value(tax_year, "kwarttarief", "value"),
-                )
-            )
-        return 4 * self.calculate_total_tax(year, province)
+    @keyword_only
+    def calculate_yearly_tax(self, *, year: Moment, province: str) -> int:
+        """Calculate the tax due for a whole year, rounded down to whole euros."""
+        return self.calculate_breakdown(year=year, province=province).per_year
 
     def is_historic(self, year: Moment) -> bool:
         """Oldtimer ruling applies when vehicle was taken into use 40 or more years ago"""

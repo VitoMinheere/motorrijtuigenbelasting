@@ -23,12 +23,12 @@ class Motorcycle(Vehicle):
 
     TAX_CATEGORY = "motorcycle"
 
-    def calculate_base_tax(self, year: int) -> float:
+    def tax_components(self, year: int) -> dict[str, float]:
         """
-        Calculates the fixed base tax for motorcycles (art. 25).
+        Fixed base tax for motorcycles (art. 25).
         Source: https://wetten.overheid.nl/jci1.3:c:BWBR0006324&hoofdstuk=IV&afdeling=4&z=2026-01-01&g=2026-01-01
         """
-        return get_tax_value(year, "motorcycle", "value")
+        return {"base": get_tax_value(year, "motorcycle", "value")}
 
     def opcenten_base(self) -> float:
         """

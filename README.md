@@ -19,6 +19,7 @@ Motorrijtuigenbelasting is a Python library designed to calculate Dutch road tax
 1. [Installation](#installation)  
 2. [Usage](#usage)  
    - [Example](#example)  
+   - [Command line](#command-line)  
    - [Weight: massa rijklaar](#weight-massa-rijklaar)  
 3. [Supported Vehicle Types](#supported-vehicle-types)  
 4. [Contributing](#contributing)  
@@ -69,7 +70,31 @@ Provinces can be given as `Province.NOORD_HOLLAND`, `"noord-holland"`, `"Noord-H
 
 `manufacturing_year` and `year` also accept a `datetime.date`. Pass the datum eerste toelating from the kentekenregister to get the oldtimer rule right: a car first admitted on 15 November 1986 is tax free from 15 November 2026, not from 1 January 2026. A plain year counts as 1 January.
 
+To see how the amount is built up, use `calculate_breakdown`:
+
+```python
+breakdown = car.calculate_breakdown(year=2026, province="noord-holland")
+breakdown.components      # {"base": 116.05, "fuel_surcharge": 0.0}
+breakdown.opcenten        # 56.79
+breakdown.rule            # TaxRule.NORMAL, KWARTTARIEF or OLDTIMER
+breakdown.per_three_months, breakdown.per_year
+```
+
 Use `calculate_yearly_tax` for the amount per year. For most vehicles that is four times the amount per three months. With the kwarttarief you pay once per year, so `calculate_total_tax` returns a quarter of the yearly amount, rounded down.
+
+### Command line  
+
+After installing, the `mrb` command (or `python -m motorrijtuigenbelasting`) calculates the tax without writing code:
+
+```bash
+mrb --weight 1300 --fuel benzine --province noord-holland --year 2026
+# € 172 per three months
+
+mrb --weight 820 --fuel diesel --diesel-particles --province utrecht --breakdown --yearly
+mrb --vehicle motorcycle --province gelderland --first-use 1987 --yearly
+```
+
+Run `mrb --help` for all options.
 
 ### Weight: massa rijklaar  
 

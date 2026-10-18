@@ -1,38 +1,111 @@
+import datetime
 import unittest
 
-from motorrijtuigenbelasting.vehicles import EnergySource
-from motorrijtuigenbelasting.vehicles.car import Car
+from motorrijtuigenbelasting import Car, EnergySource, Motorcycle
+from motorrijtuigenbelasting.tax_data import rate_for_weight, round_weight
+from motorrijtuigenbelasting.vehicles.base import anniversary, as_date
+
+TABLE = {
+    "500": 10.0,
+    "600": 20.0,
+    "900": 50.0,
+    "per_100kg_above_900": 5.0,
+    "3300": 400.0,
+    "per_100kg_above_3300": 2.0,
+}
 
 
 class TestCalculateMultiplier(unittest.TestCase):
-
     def test_calculate_multiplier(self):
-        # Create test cases with different weights
-        vehicle1 = Car(weight=950, energy_source=EnergySource.ELEKTRICITEIT)
+        # Weights are massa rijklaar, the multiplier counts steps of eigen massa (100 kg less)
+        cases = [
+            (1050, {}, 0, "Weight below cutoff should return 0"),
+            (1100, {}, 1, "Weight at exact cutoff + 100 should return 1"),
+            (1350, {}, 3, "Weight at cutoff + 350 should return 3"),
+            (1000, {}, 0, "Exact cutoff should return 0"),
+            (
+                3400,
+                {"cut_off": 3300},
+                0,
+                "Custom cutoff matches weight should return 0",
+            ),
+        ]
+        for weight, kwargs, expected, message in cases:
+            with self.subTest(weight=weight, **kwargs):
+                car = Car(weight=weight, energy_source=EnergySource.ELEKTRICITEIT)
+                self.assertEqual(car.calculate_multiplier(**kwargs), expected, message)
+
+
+class TestWeight(unittest.TestCase):
+    def test_round_weight(self):
+        """Wet MRB 1994 art. 22 lid 1b: exactly 50 kg rounds down"""
+        cases = {1049: 1000, 1050: 1000, 1051: 1100, 1100: 1100, 1149: 1100}
+        for weight, expected in cases.items():
+            with self.subTest(weight=weight):
+                self.assertEqual(round_weight(weight), expected)
+
+    def test_car_weight_is_massa_rijklaar(self):
+        car = Car(weight=1150, energy_source=EnergySource.BENZINE)
+        self.assertEqual(car.rounded_weight, 1000)
+
+    def test_rate_for_weight(self):
+        cases = {
+            300: 10.0,  # Below the lowest bracket
+            500: 10.0,
+            600: 20.0,
+            900: 50.0,
+            1000: 55.0,
+            3200: 165.0,
+            3300: 400.0,  # Second tier starts from its own amount
+            3500: 404.0,
+        }
+        for weight, expected in cases.items():
+            with self.subTest(weight=weight):
+                self.assertEqual(rate_for_weight(TABLE, weight), expected)
+
+
+class TestDates(unittest.TestCase):
+    def test_anniversary_of_29_february(self):
         self.assertEqual(
-            vehicle1.calculate_multiplier(), 0, "Weight below cutoff should return 0"
+            anniversary(datetime.date(1984, 2, 29), 40), datetime.date(2024, 2, 29)
+        )
+        self.assertEqual(
+            anniversary(datetime.date(1984, 2, 29), 41), datetime.date(2025, 3, 1)
         )
 
-        vehicle2 = Car(weight=1000, energy_source=EnergySource.ELEKTRICITEIT)
+    def test_year_means_1_january(self):
+        self.assertEqual(as_date(2026), datetime.date(2026, 1, 1))
+
+
+class TestArguments(unittest.TestCase):
+    def test_positional_arguments_are_deprecated(self):
+        car = Car(weight=1300, energy_source=EnergySource.BENZINE)
+        with self.assertWarns(DeprecationWarning):
+            total = car.calculate_total_tax(2026, "noord-holland")
         self.assertEqual(
-            vehicle2.calculate_multiplier(),
-            1,
-            "Weight at exact cutoff + 100 should return 1",
+            total, car.calculate_total_tax(year=2026, province="noord-holland")
+        )
+        # The old order of calculate_opcenten was (province, year)
+        with self.assertWarns(DeprecationWarning):
+            opcenten = car.calculate_opcenten("noord-holland", 2026)
+        self.assertEqual(
+            opcenten, car.calculate_opcenten(province="noord-holland", year=2026)
         )
 
-        vehicle3 = Car(weight=1250, energy_source=EnergySource.ELEKTRICITEIT)
-        self.assertEqual(
-            vehicle3.calculate_multiplier(), 3, "Weight at cutoff + 350 should return 3"
-        )
+    def test_energy_source_by_value(self):
+        car = Car(weight=1300, energy_source="diesel")
+        self.assertIs(car.energy_source, EnergySource.DIESEL)
 
-        vehicle4 = Car(weight=900, energy_source=EnergySource.ELEKTRICITEIT)
-        self.assertEqual(
-            vehicle4.calculate_multiplier(), 0, "Exact cutoff should return 0"
-        )
+    def test_invalid_input(self):
+        for kwargs in (
+            {"weight": -1, "energy_source": EnergySource.BENZINE},
+            {"weight": "1300", "energy_source": EnergySource.BENZINE},
+            {"weight": True, "energy_source": EnergySource.BENZINE},
+            {"weight": 1300, "energy_source": "kerosine"},
+        ):
+            with self.subTest(**kwargs), self.assertRaises(ValueError):
+                Motorcycle(**kwargs)
 
-        vehicle5 = Car(weight=3300, energy_source=EnergySource.ELEKTRICITEIT)
-        self.assertEqual(
-            vehicle5.calculate_multiplier(cut_off=3300),
-            0,
-            "Custom cutoff matches weight should return 0",
-        )
+    def test_weight_may_have_decimals(self):
+        self.assertEqual(round_weight(1350.4), 1400)
+        self.assertEqual(round_weight(1350.0), 1300)

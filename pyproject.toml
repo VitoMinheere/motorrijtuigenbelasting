@@ -1,13 +1,13 @@
 [build-system]
-requires = ["setuptools>=42", "wheel"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "motorrijtuigenbelasting"
-version = "0.1.0"
+version = "0.2.0"
 description = "Calculate Dutch road tax Motorrijtuigenbelasting(MRB) for vehicles."
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 license = "MIT"
 
 authors = [
@@ -16,15 +16,42 @@ authors = [
 
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
-    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Operating System :: OS Independent"
 ]
 
 dependencies = []
 
+[project.optional-dependencies]
+# Pinned so local runs and CI agree, update them together
+dev = ["ruff==0.17.1", "black==26.10.1", "mypy==2.4.0", "coverage==7.16.2"]
+
+[project.scripts]
+mrb = "motorrijtuigenbelasting.__main__:main"
+
 [project.urls]
 "Source Code" = "https://github.com/VitoMinheere/motorrijtuigenbelasting"
 "Issue Tracker" = "https://github.com/VitoMinheere/motorrijtuigenbelasting/issues"
+
+[tool.setuptools.packages.find]
+include = ["motorrijtuigenbelasting*"]
+
+[tool.setuptools.package-data]
+motorrijtuigenbelasting = ["data/*.json"]
+
+[tool.ruff]
+target-version = "py310"
+
+[tool.mypy]
+python_version = "3.10"
+files = ["motorrijtuigenbelasting"]
+
+[tool.coverage.run]
+source = ["motorrijtuigenbelasting"]
+
+[tool.coverage.report]
+fail_under = 90
+show_missing = true

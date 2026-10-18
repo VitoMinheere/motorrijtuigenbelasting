@@ -1,5 +1,6 @@
-from ..vehicles import Vehicle
-from .constants import OPCENTEN
+from ..tax_data import get_tax_value
+from .base import Vehicle
+from .constants import MOTORCYCLE_OPCENTEN_BASE
 
 
 class Motorcycle(Vehicle):
@@ -7,7 +8,12 @@ class Motorcycle(Vehicle):
     Represents a motorcycle for road tax calculations.
 
     Motorcycles have a fixed base tax per quarter, with additional opcenten
-    based on the province. They are not subject to inflation adjustments.
+    based on the province.
+
+    Zero emission motorcycles (motorcycle.zero_emission_factor in tax_data.json):
+    up to 2024 the tax was nihil and in 2025 a quarter, both under art. 31. Art. 31
+    was removed on 1 January 2026 and art. 23b only covers personenauto's, so from
+    2026 they pay the full amount.
 
     Args:
         weight (int): Weight of the motorcycle (not used in tax calculation).
@@ -15,57 +21,18 @@ class Motorcycle(Vehicle):
         manufacturing_year (int, optional): Year the motorcycle was manufactured.
     """
 
-    def calculate_base_tax(self) -> float:
-        """
-        Calculates the fixed base tax for motorcycles. This rate is fixed and
-        does not change based on inflation.
-        Source: https://wetten.overheid.nl/jci1.3:c:BWBR0006324&hoofdstuk=IV&afdeling=4&z=2024-01-01&g=2024-01-01
+    TAX_CATEGORY = "motorcycle"
 
-        Args:
-            year (int): The year for which the tax is calculated.
-
-        Returns:
-            float: The fixed base tax amount.
+    def tax_components(self, year: int) -> dict[str, float]:
         """
-        return 29.96
-
-    def calculate_opcenten(self, province: str, year: int) -> float:
+        Fixed base tax for motorcycles (art. 25).
+        Source: https://wetten.overheid.nl/jci1.3:c:BWBR0006324&hoofdstuk=IV&afdeling=4&z=2026-01-01&g=2026-01-01
         """
-        Calculates the provincial opcenten tax for motorcycles. This is a percentage
-        of a fixed amount.
+        return {"base": get_tax_value(year, "motorcycle", "value")}
+
+    def opcenten_base(self) -> float:
+        """
+        Opcenten for motorcycles are a percentage of a fixed amount.
         Source: https://zoek.officielebekendmakingen.nl/blg-1106771.pdf
-
-        Args:
-            province (str): Name of the province.
-            year (int): The year for which the tax is calculated.
-
-        Returns:
-            float: The calculated opcenten tax amount.
         """
-        fixed_opcenten_base = 7.80
-        province_rate = OPCENTEN[province][year] / 100
-        return fixed_opcenten_base * province_rate
-
-    def calculate_total_tax(self, year: int, province: str) -> int:
-        """
-        Calculates the total tax for the motorcycle, including the base tax
-        and provincial opcenten, rounded down to the nearest whole number.
-
-        Args:
-            province (str): Name of the province.
-            year (int): The year for which the tax is calculated.
-
-        Returns:
-            int: The total road tax amount.
-        """
-        self.set_calculation_year(year)
-
-        base_tax = self.calculate_base_tax()
-        opcenten = round(self.calculate_opcenten(province, year), 2)
-
-        total_tax = base_tax + opcenten
-        total_tax = self.apply_electric_tax_discount(total_tax)
-        total_tax = self.apply_kwarttarief_discount(total_tax)
-        total_tax = self.apply_historic_tax_discount(total_tax)
-
-        return int(total_tax)
+        return MOTORCYCLE_OPCENTEN_BASE

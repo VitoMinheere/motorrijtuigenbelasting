@@ -1,126 +1,97 @@
 import unittest
 
-from motorrijtuigenbelasting.vehicles.motorcycle import Motorcycle
-from motorrijtuigenbelasting.vehicles import EnergySource
+from motorrijtuigenbelasting import EnergySource, Motorcycle
+
+B = EnergySource.BENZINE
+E = EnergySource.ELEKTRICITEIT
+
+# (province, energy source, manufacturing year, expected tax per three months)
+# Provinces are picked because their totals round to different amounts.
+TOTAL_TAX = {
+    2024: [
+        ("noord-holland", B, None, 36),
+        ("noord-holland", E, None, 0),  # Art. 31: nihil
+        ("gelderland", B, None, 37),
+        ("gelderland", E, None, 0),
+        ("gelderland", B, 1980, 0),
+        ("gelderland", B, 1987, 8),
+    ],
+    2025: [
+        ("noord-holland", B, None, 36),
+        ("noord-holland", E, None, 9),  # Art. 31: een kwart
+        ("gelderland", B, None, 38),
+        ("gelderland", E, None, 9),
+        ("gelderland", B, 1980, 0),
+        ("gelderland", B, 1987, 9),
+    ],
+    2026: [
+        ("noord-holland", B, None, 37),
+        # Art. 31 was removed and art. 23b only covers personenauto's, so they pay in full
+        ("noord-holland", E, None, 37),
+        ("gelderland", B, None, 38),
+        ("gelderland", E, None, 38),
+        ("gelderland", B, 1980, 0),
+        ("gelderland", B, 1987, 9),
+    ],
+}
+
+# Kwarttarief per year for a 1987 motorcycle in gelderland (Wet MRB 1994 art. 84a):
+# the quarterly tariff of the previous year plus this year's opcenten, paid once.
+KWARTTARIEF_YEARLY = {2024: 34, 2025: 37, 2026: 37}
+
+# Opcenten in noord-holland. Checked with tool.
+OPCENTEN = {2024: 6.04, 2025: 6.04, 2026: 6.4}
 
 
-class TestMotorcycleTaxCalculations2024(unittest.TestCase):
-    YEAR = 2024
+class TestMotorcycleTax(unittest.TestCase):
+    def test_total_tax(self):
+        for year, cases in TOTAL_TAX.items():
+            for province, energy_source, manufacturing_year, expected in cases:
+                with self.subTest(
+                    year=year,
+                    province=province,
+                    energy_source=energy_source,
+                    manufacturing_year=manufacturing_year,
+                ):
+                    motor = Motorcycle(
+                        weight=0,
+                        energy_source=energy_source,
+                        manufacturing_year=manufacturing_year,
+                    )
+                    self.assertEqual(
+                        motor.calculate_total_tax(year=year, province=province),
+                        expected,
+                    )
 
-    def test_calc_opcenten(self):
-        # Test cases for calc_opcenten
-        province = "noord-holland"
-        motor = Motorcycle(weight=1200, energy_source=EnergySource.BENZINE)
-        result = 6.04  # Checked with tool
+    def test_kwarttarief_yearly(self):
+        motor = Motorcycle(weight=0, energy_source=B, manufacturing_year=1987)
+        for year, expected in KWARTTARIEF_YEARLY.items():
+            with self.subTest(year=year):
+                self.assertEqual(
+                    motor.calculate_yearly_tax(year=year, province="gelderland"),
+                    expected,
+                )
 
-        self.assertEqual(
-            round(motor.calculate_opcenten(province, self.YEAR), 2), result
-        )
+    def test_opcenten(self):
+        motor = Motorcycle(weight=1200, energy_source=B)
+        for year, expected in OPCENTEN.items():
+            with self.subTest(year=year):
+                self.assertEqual(
+                    round(
+                        motor.calculate_opcenten(province="noord-holland", year=year), 2
+                    ),
+                    expected,
+                )
 
-        # Edge case: Non-existent province
+    def test_unknown_province(self):
+        motor = Motorcycle(weight=0, energy_source=B)
         with self.assertRaises(KeyError):
-            motor.calculate_opcenten("Non-existent", self.YEAR)
+            motor.calculate_opcenten(province="Non-existent", year=2026)
 
-    def test_calculate_tax_noord_holland(self):
-        province = "noord-holland"
-        motor = Motorcycle(weight=0, energy_source=EnergySource.BENZINE)
-        result = 36
-
-        self.assertEqual(motor.calculate_total_tax(self.YEAR, province), result)
-
-        # Edge case: Electric motor before 2025
-        electric_motor = Motorcycle(weight=0, energy_source=EnergySource.ELEKTRICITEIT)
-        self.assertEqual(electric_motor.calculate_total_tax(self.YEAR, province), 0)
-
-    def test_calculate_tax_gelderland(self):
-        """Test with another province as they vary between 36 and 37"""
-        province = "gelderland"
-        motor = Motorcycle(weight=0, energy_source=EnergySource.BENZINE)
-        result = 37
-
-        self.assertEqual(motor.calculate_total_tax(self.YEAR, province), result)
-
-        # Edge case: Electric motor before 2025
-        electric_motor = Motorcycle(
-            weight=720, energy_source=EnergySource.ELEKTRICITEIT
-        )
-        self.assertEqual(electric_motor.calculate_total_tax(self.YEAR, province), 0)
-
-    def test_calculate_tax_oldtimer(self):
-        province = "gelderland"
-        motor = Motorcycle(
-            weight=0, energy_source=EnergySource.BENZINE, manufacturing_year=1980
-        )
-        result = 0
-
-        self.assertEqual(motor.calculate_total_tax(self.YEAR, province), result)
-
-    def test_calculate_tax_kwarttarief(self):
-        province = "gelderland"
-        motor = Motorcycle(
-            weight=0, energy_source=EnergySource.BENZINE, manufacturing_year=1987
-        )
-        result = 9
-
-        self.assertEqual(motor.calculate_total_tax(self.YEAR, province), result)
-
-
-class TestMotorcycleTaxCalculations2025(unittest.TestCase):
-    YEAR = 2025
-
-    def test_calc_opcenten(self):
-        # Test cases for calc_opcenten
-        province = "noord-holland"
-        motor = Motorcycle(weight=1200, energy_source=EnergySource.BENZINE)
-        result = 6.04  # Checked with tool
-
+    def test_weight_does_not_matter(self):
+        light = Motorcycle(weight=0, energy_source=B)
+        heavy = Motorcycle(weight=720, energy_source=B)
         self.assertEqual(
-            round(motor.calculate_opcenten(province, self.YEAR), 2), result
+            light.calculate_total_tax(year=2026, province="gelderland"),
+            heavy.calculate_total_tax(year=2026, province="gelderland"),
         )
-
-        # Edge case: Non-existent province
-        with self.assertRaises(KeyError):
-            motor.calculate_opcenten("Non-existent", self.YEAR)
-
-    def test_calculate_tax_noord_holland(self):
-        province = "noord-holland"
-        motor = Motorcycle(weight=0, energy_source=EnergySource.BENZINE)
-        result = 36
-
-        self.assertEqual(motor.calculate_total_tax(self.YEAR, province), result)
-
-        # Edge case: Electric motor before 2025
-        electric_motor = Motorcycle(weight=0, energy_source=EnergySource.ELEKTRICITEIT)
-        self.assertEqual(electric_motor.calculate_total_tax(self.YEAR, province), 9)
-
-    def test_calculate_tax_gelderland(self):
-        """Test with another province as they vary between 36 and 37"""
-        province = "gelderland"
-        motor = Motorcycle(weight=0, energy_source=EnergySource.BENZINE)
-        result = 37  # Although belastingdienst finds it 38
-
-        self.assertEqual(motor.calculate_total_tax(self.YEAR, province), result)
-
-        # Edge case: Electric motor before 2025
-        electric_motor = Motorcycle(
-            weight=720, energy_source=EnergySource.ELEKTRICITEIT
-        )
-        self.assertEqual(electric_motor.calculate_total_tax(self.YEAR, province), 9)
-
-    def test_calculate_tax_oldtimer(self):
-        province = "gelderland"
-        motor = Motorcycle(
-            weight=0, energy_source=EnergySource.BENZINE, manufacturing_year=1980
-        )
-        result = 0
-
-        self.assertEqual(motor.calculate_total_tax(self.YEAR, province), result)
-
-    def test_calculate_tax_kwarttarief(self):
-        province = "gelderland"
-        motor = Motorcycle(
-            weight=0, energy_source=EnergySource.BENZINE, manufacturing_year=1987
-        )
-        result = 9
-
-        self.assertEqual(motor.calculate_total_tax(self.YEAR, province), result)

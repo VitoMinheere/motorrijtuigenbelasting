@@ -19,6 +19,7 @@ Motorrijtuigenbelasting is a Python library designed to calculate Dutch road tax
 1. [Installation](#installation)  
 2. [Usage](#usage)  
    - [Example](#example)  
+   - [Command line](#command-line)  
    - [Weight: massa rijklaar](#weight-massa-rijklaar)  
 3. [Supported Vehicle Types](#supported-vehicle-types)  
 4. [Contributing](#contributing)  
@@ -80,6 +81,20 @@ breakdown.per_three_months, breakdown.per_year
 ```
 
 Use `calculate_yearly_tax` for the amount per year. For most vehicles that is four times the amount per three months. With the kwarttarief you pay once per year, so `calculate_total_tax` returns a quarter of the yearly amount, rounded down.
+
+### Command line  
+
+After installing, the `mrb` command (or `python -m motorrijtuigenbelasting`) calculates the tax without writing code:
+
+```bash
+mrb --weight 1300 --fuel benzine --province noord-holland --year 2026
+# € 172 per three months
+
+mrb --weight 820 --fuel diesel --diesel-particles --province utrecht --breakdown --yearly
+mrb --vehicle motorcycle --province gelderland --first-use 1987 --yearly
+```
+
+Run `mrb --help` for all options.
 
 ### Weight: massa rijklaar  
 
